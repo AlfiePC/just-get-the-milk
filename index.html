@@ -4,6 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <title>Just Get the Milk</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0098db">
+<link rel="icon" href="icon-192.png">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rozha+One&family=Montserrat:wght@400;600;700;800&display=swap">
 <style>
 /* Layout: full-bleed 3D shop with a tutorial banner at the top, objective bar under it, a controls strip at the foot of the view, and a dark HUD (list, regulation, feed) along the bottom. Single deliberate look: glaring shop, dark chrome. */
@@ -1033,6 +1036,7 @@ function end(reason){
 window.__game={S,get player(){return player},keys,get scene(){return scene},get renderer(){return renderer},productTypes,THREE,step:(n=60,dt=1/60)=>{player.tyaw=player.yaw;player.tpitch=player.pitch;cancelAnimationFrame(raf);for(let i=0;i<n;i++){if(!S.running)break;last=performance.now()-dt*1000;tick();cancelAnimationFrame(raf);}if(S.running){last=performance.now();raf=requestAnimationFrame(tick);}},use,tap,startChallenge,CHALLENGES,aimed:()=>{const o=aimed();return o?{item:o.item,target:o.target,d:o.d}:null},src:()=>Object.keys(src),targets:()=>Object.fromEntries(Object.entries(targets).map(([k,m])=>[k,m.userData.home]))};
 
 if(/[?&]mute=1/.test(location.search)){$('#vol').value=0;}
+if('serviceWorker' in navigator&&location.protocol==='https:'){navigator.serviceWorker.register('sw.js').catch(()=>{});}
 $('#startBtn').addEventListener('click',start);
 $('#againBtn').addEventListener('click',()=>{clearInterval(countdownTimer);start();});
 $('#sameBtn').addEventListener('click',()=>{clearInterval(countdownTimer);S.keepProfile=true;start();});

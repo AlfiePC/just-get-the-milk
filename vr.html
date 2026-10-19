@@ -4,6 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <title>Just Get the Milk VR</title>
+<link rel="manifest" href="manifest-vr.webmanifest">
+<meta name="theme-color" content="#0098db">
+<link rel="icon" href="icon-192.png">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rozha+One&family=Montserrat:wght@400;600;700;800&display=swap">
 <style>
 /* Layout: full-bleed 3D shop with a tutorial banner at the top, objective bar under it, a controls strip at the foot of the view, and a dark HUD (list, regulation, feed) along the bottom. Single deliberate look: glaring shop, dark chrome. */
@@ -1052,6 +1055,7 @@ window.__game={S,get player(){return player},keys,get scene(){return scene},get 
 
 if(/[?&]mute=1/.test(location.search)){$('#vol').value=0;}
 if(!navigator.xr){const w=document.createElement('div');w.className='warn';w.innerHTML='<div><strong>No headset detected.</strong> Open this page in the browser on a Meta Quest to play in VR. It still runs here as a flat preview.</div>';$('#start .wrap').insertBefore(w,$('#startBtn'));}
+if('serviceWorker' in navigator&&location.protocol==='https:'){navigator.serviceWorker.register('sw.js').catch(()=>{});}
 $('#startBtn').addEventListener('click',start);
 $('#againBtn').addEventListener('click',()=>{clearInterval(countdownTimer);start();});
 $('#sameBtn').addEventListener('click',()=>{clearInterval(countdownTimer);S.keepProfile=true;start();});
