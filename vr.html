@@ -378,7 +378,14 @@ h2.sec{font-size:26px;color:#fff}
 
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
 <script type="module">
+const EMU=/[?&]emu=1/.test(location.search);
+if(EMU){const m=await import('https://cdn.jsdelivr.net/npm/iwer@2.7.0/build/iwer.module.js');const dev=new m.XRDevice(m.metaQuest3,{stereoEnabled:true});dev.installRuntime({forceInstall:true});dev.position.set(0,1.62,0);
+  window.__xr={dev,head:(yaw,pitch=0)=>{const e=new m.XRDevice?null:null;const cy=Math.cos(yaw/2),sy=Math.sin(yaw/2),cp=Math.cos(pitch/2),sp=Math.sin(pitch/2);dev.quaternion.set(sp*cy,cp*sy,-sp*sy,cp*cy);},
+    stick:(hand,x,y)=>dev.controllers[hand].updateAxes('thumbstick',x,y),press:(hand,btn,v=1)=>dev.controllers[hand].updateButtonValue(btn,v),
+    tap:(hand,btn)=>{dev.controllers[hand].updateButtonValue(btn,1);setTimeout(()=>dev.controllers[hand].updateButtonValue(btn,0),60);}};
+  ['left','right'].forEach((h,i)=>{const c=dev.controllers[h];c.position.set(i?.25:-.25,1.3,-.35);});}
 import * as THREE from 'three';
+import {mergeGeometries} from 'three/addons/utils/BufferGeometryUtils.js';
 import {RoomEnvironment} from 'three/addons/environments/RoomEnvironment.js';
 import {RoundedBoxGeometry} from 'three/addons/geometries/RoundedBoxGeometry.js';
 import {VRButton} from 'three/addons/webxr/VRButton.js';
@@ -516,7 +523,7 @@ function coach(key,title,body,cls){ if(S.coached.has(key)) return; S.coached.add
 /* =====================================================================
    WORLD
    ===================================================================== */
-let renderer,scene,camera,player,world={},lowGfx=false,quality=2,ftAvg=.016,lastDrop=0;const xr={ctrl:[],grip:[],prevBtn:[{},{}],snap:false,presenting:false,supported:false};if(navigator.xr&&navigator.xr.isSessionSupported){navigator.xr.isSessionSupported('immersive-vr').then(ok=>{xr.supported=ok;}).catch(()=>{});}const tmpQ=new THREE.Quaternion(),tmpE=new THREE.Euler(0,0,0,'YXZ'),tmpV=new THREE.Vector3();
+let renderer,scene,camera,player,world={},lowGfx=false,quality=2,ftAvg=.016,lastDrop=0;const xr={ctrl:[],grip:[],prevBtn:[{},{}],snap:false,presenting:false,supported:false};if(navigator.xr&&navigator.xr.isSessionSupported){navigator.xr.isSessionSupported('immersive-vr').then(ok=>{xr.supported=ok;}).catch(()=>{});}if(EMU)xr.supported=true;const tmpQ=new THREE.Quaternion(),tmpE=new THREE.Euler(0,0,0,'YXZ'),tmpV=new THREE.Vector3();
 const items=[],solids=[],npcs=[],raycaster=new THREE.Raycaster(); const targets={}; const markers={};
 const ZONES=[{id:'fruit',x1:-15,z1:-14.5,x2:-7.5,z2:-5.5},{id:'chill',x1:10,z1:-14,x2:16,z2:12},{id:'tills',x1:-15,z1:8,x2:8,z2:15}];
 const PRODUCTS={
@@ -537,10 +544,10 @@ function box(w,h,d,mat,x,y,z,ry=0,shadow=true){const m=new THREE.Mesh(new THREE.
 function buildWorld(){
   const cv=$('#c3d');
   renderer=new THREE.WebGLRenderer({canvas:cv,antialias:true,powerPreference:'high-performance'});
-  renderer.setPixelRatio(Math.min(devicePixelRatio,1.25)); renderer.xr.enabled=true; renderer.xr.setReferenceSpaceType('local-floor'); renderer.xr.setFramebufferScaleFactor(.85);
+  renderer.setPixelRatio(Math.min(devicePixelRatio,1.25)); renderer.xr.enabled=true; renderer.xr.setReferenceSpaceType('local-floor'); renderer.xr.setFramebufferScaleFactor(.8); renderer.xr.setFoveation(1);
   renderer.shadowMap.enabled=false; renderer.toneMapping=THREE.ACESFilmicToneMapping; renderer.toneMappingExposure=1.05;
-  scene=new THREE.Scene(); scene.background=new THREE.Color(0xcfe3f5); scene.fog=new THREE.Fog(0xdfe8f0,36,90);
-  const pm=new THREE.PMREMGenerator(renderer); scene.environment=pm.fromScene(new RoomEnvironment(),.04).texture;
+  scene=new THREE.Scene(); scene.background=new THREE.Color(0xffffff); scene.fog=new THREE.Fog(0xdfe8f0,36,90);
+  
   camera=new THREE.PerspectiveCamera(70,1,.05,120); camera.position.set(0,1.62,0); world.rig=new THREE.Group(); world.rig.add(camera); scene.add(world.rig);
   player={x:0,z:-15.5,yaw:Math.PI,pitch:0,tyaw:Math.PI,tpitch:0,vx:0,vz:0};
 
@@ -648,10 +655,11 @@ function buildWorld(){
   // ---- NPC shoppers: humanoid figures on a waypoint network along the real aisles ----
   buildNav();
   const SKIN=[0xf1c27d,0x8d5524,0xffdbac,0xc68642,0xe0ac69,0x5c3a21];const HAIR=[0x2b1d14,0x6b4a2b,0xd9b380,0x111111,0x8a8a8a,0xa0522d];const TOP=[0x2c3e50,0x8e44ad,0xc0392b,0x16a085,0x7f8c8d,0x005293,0xe67e22,0x34495e];const BOT=[0x1f2a44,0x2d2d2d,0x5d6d7e,0x3b2f2f,0x4a6fa5];
-  for(let i=0;i<7;i++){const child=i===6;npcs.push(makeNPC({child,skin:pick(SKIN),hair:pick(HAIR),top:pick(TOP),bot:pick(BOT),scale:child?.62:rnd(.92,1.08),cart:!child&&Math.random()<.55,start:i}));}
-  world.child=npcs[6];
+  for(let i=0;i<5;i++){const child=i===4;npcs.push(makeNPC({child,skin:pick(SKIN),hair:pick(HAIR),top:pick(TOP),bot:pick(BOT),scale:child?.62:rnd(.92,1.08),cart:!child&&Math.random()<.55,start:i}));}
+  world.child=npcs[4];
   world.staff=makeNPC({child:false,skin:pick(SKIN),hair:pick(HAIR),top:0x92d400,bot:0x1f2a44,scale:1,cart:false,start:99});npcs.pop();world.staff.m.visible=false;world.staff.state='browse';world.staff.stateT=1e9;
 
+  mergeStatics();
   // ---- head-locked effect overlay (replaces post-processing; never moves the head) ----
   world.ov=new THREE.Mesh(new THREE.PlaneGeometry(6,6),new THREE.ShaderMaterial({transparent:true,depthTest:false,depthWrite:false,uniforms:OverlayUniforms,vertexShader:`varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}`,fragmentShader:OverlayFrag}));
   world.ov.position.set(0,0,-1); world.ov.renderOrder=2000; camera.add(world.ov);
@@ -667,6 +675,9 @@ function buildWorld(){
   world.head=new THREE.Mesh(new THREE.PlaneGeometry(1.5,.7),new THREE.MeshBasicMaterial({map:world.headT,transparent:true,depthTest:false})); world.head.position.set(0,-.22,-1.6); world.head.renderOrder=1600; world.head.visible=false; camera.add(world.head);
   onResize(); window.addEventListener('resize',onResize);
 }
+function mergeStatics(){world.vcMat=world.vcMat||new THREE.MeshStandardMaterial({vertexColors:true,roughness:.6,metalness:.15});const keep=new Set([...world.fridgeDoors,...(world.doors||[]),world.spinner,world.fanHit,...(world.tillLamps||[])]);const groups=new Map();const toRemove=[];
+  scene.children.forEach(o=>{if(!o.isMesh||o.isInstancedMesh||o.isSprite||keep.has(o)||o.userData.item||o.userData.use||o.userData.ring)return;if(o.material.transparent&&o.material.opacity<1)return;const g=o.geometry;if(!g.attributes.position||!g.attributes.normal||!g.attributes.uv)return;o.updateMatrixWorld(true);const c=(g.index?g.toNonIndexed():g.clone());for(const k of Object.keys(c.attributes))if(!['position','normal','uv'].includes(k))c.deleteAttribute(k);if(c.attributes.position.count>60000)return;c.applyMatrix4(o.matrixWorld);const M=o.material;const plain=!M.map&&!M.emissiveMap&&!(M.emissive&&M.emissiveIntensity>0&&M.emissive.getHex())&&!M.transparent;const key=plain?'vc':M.uuid;if(plain){const n=c.attributes.position.count;const col=new Float32Array(n*3);for(let i=0;i<n;i++){col[i*3]=M.color.r;col[i*3+1]=M.color.g;col[i*3+2]=M.color.b;}c.setAttribute('color',new THREE.BufferAttribute(col,3));}if(!groups.has(key))groups.set(key,{mat:plain?world.vcMat:M,geos:[]});groups.get(key).geos.push(c);toRemove.push(o);});
+  toRemove.forEach(o=>scene.remove(o));let n=0;groups.forEach(({mat,geos})=>{const m=mergeGeometries(geos,false);if(!m)return;const mesh=new THREE.Mesh(m,mat);mesh.matrixAutoUpdate=false;scene.add(mesh);n++;});world.mergedStats={before:toRemove.length,after:n};}
 const OverlayUniforms={time:{value:0},tunnel:{value:0},red:{value:0},fog:{value:0},grey:{value:0},flash:{value:0},blink:{value:0},frag:{value:0},grain:{value:0},cold:{value:0},smell:{value:0},glare:{value:0},vig:{value:.12}};
 const OverlayFrag=`uniform float time,tunnel,red,fog,grey,flash,blink,frag,grain,cold,smell,glare,vig;varying vec2 vUv;float hash(float n){return fract(sin(n)*43758.5453);}
 void main(){vec2 d=(vUv-0.5)*2.0;float r=length(d*vec2(1.0,1.15));vec3 col=vec3(0.0);float a=0.0;
@@ -697,9 +708,9 @@ function makeNPC(o){const g=new THREE.Group();const sk=new THREE.MeshStandardMat
   const head=new THREE.Mesh(new THREE.SphereGeometry(.115,16,14),sk);head.position.y=1.66;const hr=new THREE.Mesh(new THREE.SphereGeometry(.122,16,10,0,Math.PI*2,0,Math.PI*.55),hair);hr.position.y=1.68;
   const neck=new THREE.Mesh(new THREE.CylinderGeometry(.05,.06,.08,10),sk);neck.position.y=1.52;
   const mkLimb=(r,len,mat,px,py)=>{const piv=new THREE.Group();piv.position.set(px,py,0);const m=new THREE.Mesh(new THREE.CapsuleGeometry(r,len,4,10),mat);m.position.y=-len/2-r;piv.add(m);return piv;};
-  const armL=mkLimb(.055,.5,top,-.26,1.42),armR=mkLimb(.055,.5,top,.26,1.42);const handL=new THREE.Mesh(new THREE.SphereGeometry(.05,10,8),sk);handL.position.y=-.64;armL.add(handL);const handR=handL.clone();armR.add(handR);
-  const legL=mkLimb(.075,.55,bot,-.11,.86),legR=mkLimb(.075,.55,bot,.11,.86);[legL,legR].forEach(l=>{const f=new THREE.Mesh(new THREE.BoxGeometry(.12,.07,.24),shoe);f.position.set(0,-.72,.05);l.add(f);});
-  g.add(torso,head,hr,neck,armL,armR,legL,legR);g.traverse(m=>{if(m.isMesh){m.castShadow=true;}});g.scale.setScalar(o.scale);
+  const armL=mkLimb(.055,.5,top,-.26,1.42),armR=mkLimb(.055,.5,top,.26,1.42);const handL=new THREE.Mesh(new THREE.SphereGeometry(.05,10,8),sk);
+  const legL=mkLimb(.075,.55,bot,-.11,.86),legR=mkLimb(.075,.55,bot,.11,.86);
+  g.add(torso,head,hr,armL,armR,legL,legR);g.traverse(m=>{if(m.isMesh){m.castShadow=true;}});g.scale.setScalar(o.scale);
   let cart=null;if(o.cart){cart=trolley(0,0,0,false,g);cart.position.set(0,0,.75);cart.scale.setScalar(1/o.scale);armL.rotation.x=-1.1;armR.rotation.x=-1.1;}
   else if(!o.child&&Math.random()<.5){const bk=new THREE.Mesh(new THREE.BoxGeometry(.3,.22,.42,3,2,4),new THREE.MeshStandardMaterial({color:0x4a90e2,roughness:.5,wireframe:true}));bk.position.set(0,-.62,0);armR.add(bk);}
   scene.add(g);
@@ -835,11 +846,13 @@ function tutTick(dt){S.tutT+=dt;const i=Math.floor(S.tut);if(S.tut!==i){if(S.tut
    FLOW
    ===================================================================== */
 function start(){
+  if(xr.supported&&renderer&&!renderer.xr.isPresenting){navigator.xr.requestSession('immersive-vr',{optionalFeatures:['local-floor','bounded-floor']}).then(ses=>renderer.xr.setSession(ses)).catch(e=>{console.warn('xr',e);});}
+  else if(xr.supported&&!renderer){xr.pending=navigator.xr.requestSession('immersive-vr',{optionalFeatures:['local-floor','bounded-floor']}).catch(e=>{console.warn('xr',e);return null;});}
   ensureAudio();if(AC.state==='suspended')AC.resume();master.gain.value=$('#vol').value/100*.9;
   lowGfx=+$('#gfx').value<=1; if(!renderer)buildWorld(); else setQuality(+$('#gfx').value);
   Object.assign(S,{running:true,t:0,R:0,peak:0,low:0,found:0,stimT:0,impulses:[],shut:false,dis:false,ended:false,captionT:0,listScramble:0,beepT:0,rock:false,press:false,spinT:0,useT:0,useWhat:null,lagMax:0,tannoyNext:16,bumpCool:0,lastAct:0,held:null,walkT:0,stepT:0,lookAcc:0,walkAcc:0,tut:0,tutT:0,timerOn:false,wrong:0,next:null});
   S.reduced=$('#reduced').checked;S.profile=S.keepProfile&&S.profile.sound?S.profile:dealProfile();S.keepProfile=false;S.ear=false;S.melt=false;S.checkout=false;S.hbT=0;S.freezeT=0;S.flightT=0;S.loopT=0;S.crisisCool=0;S.staffT=0;S.alarmT=0;S.flightEnd=false;S.events=[];S.ch=null;S.crises=0;S.crisisT=0;S.taps=0;S.chTills=false;S.impossible=pick(['Bread','Bananas','Milk']);S.auto=null;$('#chal').classList.remove('on');$('#crisisMsg').style.display='none';if(world.staff){world.staff.m.visible=false;}$('#alert').classList.remove('on');$('#edge').style.opacity=0;S.active.clear();S.hit.clear();S.coached.clear();$('#feed').innerHTML='';$('#coach').innerHTML='';$('#stateMsg').style.display='none';$('#basket').textContent='🧺 Basket 0/4';$('#obj').classList.remove('top');
-  Object.assign(player,{x:0,z:-15.3,yaw:Math.PI,pitch:0,tyaw:Math.PI,tpitch:0,vx:0,vz:0});S.chimed=false;
+  Object.assign(player,{x:0,z:-15.3,yaw:Math.PI,pitch:0,tyaw:Math.PI,tpitch:0,vx:0,vz:0});S.chimed=false;if(world.rig)world.rig.rotation.y=Math.PI;
   Object.values(targets).forEach(m=>{m.userData.done=false;m.visible=true;const h=m.userData.home;m.position.set(h.x,h.y,h.z);m.rotation.set(0,h.ry,0);});Object.values(markers).forEach(m=>m.visible=true);markers.Checkout.visible=false;
   $('#profile').innerHTML=Object.entries(S.profile).map(([k,v])=>`<span class="chip ${v}">${SENSES[k].ic} ${SENSES[k].name.split(' (')[0].split(' &')[0]} <small>${v==='hyper'?'↑ too much':'↓ needs more'}</small></span>`).join('');
   const list=$('#list');list.innerHTML='';TARGETS.forEach(t=>{const li=document.createElement('li');li.id='li_'+t.id.replace(/\s/g,'_');li.innerHTML=`<span>${t.ic}</span><span class="txt" data-t="${t.id}">${t.id}</span>`;list.appendChild(li);});
@@ -851,7 +864,7 @@ function start(){
   coach('welcome','Your sensory profile this time',`<b style="color:var(--pink);display:inline">Turned up</b> (everything is too much): ${up.join(', ')}.<br><b style="color:var(--sky);display:inline">Turned down</b> (your body needs more): ${dn.join(', ')}.<br>The chips at the top left are your reminder. The meter below shows how you are coping.`,'blue');}
   if(!world.vrBtn){world.vrBtn=VRButton.createButton(renderer);world.vrBtn.style.cssText+=';position:absolute;top:60px;left:50%;transform:translateX(-50%);bottom:auto;z-index:9;font:800 16px Montserrat,Arial;padding:14px 28px;border-radius:999px;background:#0098db;color:#fff;border:0;opacity:1';$('#stage').appendChild(world.vrBtn);}
   last=performance.now();renderer.setAnimationLoop(tick);
-  if(xr.supported&&!renderer.xr.isPresenting){navigator.xr.requestSession('immersive-vr',{optionalFeatures:['local-floor','bounded-floor']}).then(ses=>renderer.xr.setSession(ses)).catch(()=>{});}
+  if(xr.pending){xr.pending.then(ses=>{if(ses)renderer.xr.setSession(ses);});xr.pending=null;}
 }
 function stopAll(toStart=true){S.running=false;if(renderer){renderer.setAnimationLoop(null);const ses=renderer.xr.getSession();if(ses)ses.end().catch(()=>{});}if(document.pointerLockElement)document.exitPointerLock();if(AC){Object.keys(src).forEach(removeSrc);lp.frequency.value=20000;wet.gain.value=0;dry.gain.value=1;if(world.dis){const D=world.dis;D.wet.gain.value=0;D.dry.gain.value=1;D.tDepth.gain.value=0;D.trem.gain.value=1;D.pDepth.gain.value=0;D.pan.pan.value=0;world.duck.gain.cancelScheduledValues(AC.currentTime);world.duck.gain.value=1;}}$('#caption').style.opacity=0;const ch=$('#clickHint');if(ch)ch.style.display='none';$('#alert').classList.remove('on');$('#edge').style.opacity=0;S.alertKind='';$('#chal').classList.remove('on');$('#crisisMsg').style.display='none';$('#hud').style.filter='';$('#hud').style.transform='';clearInterval(countdownTimer);if(toStart)show('start');}
 function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('on',s.id===id));}
@@ -975,7 +988,7 @@ function render(dt){
   const nextT=TARGETS.find(t=>!targets[t.id].userData.done);let objRel=0,objTxt='',objSub='';
   if(!nextT){const dx=-5-player.x,dz=8.4-player.z;const d=Math.hypot(dx,dz);objRel=Math.atan2(dx,dz)-(player.yaw+Math.PI);objTxt=S.auto?'Walking to checkout 2':'Pay at checkout 2';objSub=`${d.toFixed(0)} m`;}
   else{const m=targets[nextT.id];const dx=m.userData.home.x-player.x,dz=m.userData.home.z-player.z;const d=Math.hypot(dx,dz);objRel=Math.atan2(dx,dz)-(player.yaw+Math.PI);objTxt=S.auto?`Walking to ${S.auto.name}`:`Find: ${nextT.id}`;objSub=`${TARGETS.find(t=>t.id===nextT.id).zone} · ${d.toFixed(0)} m`;document.querySelectorAll('#list li').forEach(li=>li.classList.toggle('next',li.id==='li_'+nextT.id.replace(/\s/g,'_')));}
-  if(S.captionT>0)S.captionT-=dt;
+  if(S.captionT>0)S.captionT-=dt;let kind='',alertT='',alertD='';
   if(domOK){$('#obj .arrow').style.transform=`rotate(${(-objRel*180/Math.PI-90).toFixed(0)}deg)`;$('#objText').textContent=objTxt;$('#objDist').textContent=objSub;$('#caption').style.opacity=S.captionT>0?1:0;
   if(S.listScramble>0)S.listScramble-=dt;if(S.beepT>0)S.beepT-=dt;
   const f=$('#meterFill');f.classList.toggle('neg',R<0);f.style.width=Math.abs(R)/2+'%';f.style.left=R<0?(50-Math.abs(R)/2)+'%':'50%';$('#loadNum').textContent=Math.round(R);
@@ -989,8 +1002,9 @@ function render(dt){
   else $('#edge').style.opacity=0;
   if(S.tapT>0)S.tapT-=dt;$('#regBtn').style.display=S.ch?'none':'block';
   $('#stateLine').textContent=S.shut?'Sensory shutdown.':S.melt?'Acute dysregulation.':S.dis?'Disengaged.':S.crisisT>0?'Crisis. Wait it out.':S.ch?'Sensory challenge. Tap A or X.':R>80?'Overloaded. Everything hurts. Nothing is going in.':R>55?'Tunnelling. Vision narrowing, actions lagging.':R>25?'Loaded. It is not resetting.':R<-70?'Switching off. The list is slipping away.':R<-45?'Under-stimulated. Foggy, drifting, hungry for input.':R<-20?'Flat. Your body is asking for something.':'Regulated. The task is just a task.';
+  if(window.__perf){const P=window.__perf,ri=renderer.info.render;P.n++;P.calls=ri.calls;P.tris=ri.triangles;P.dt+=dt;P.max=Math.max(P.max,dt);}
   drawMap();}
-  if(renderer.xr.isPresenting){S.frame%4===0&&drawHead({objRel,objTxt,objSub,alertT,alertD,kind});S.frame%10===0&&drawWrist();}
+  if(renderer.xr.isPresenting){if(S.frame%5===0){const k=[objTxt,objSub,Math.round(objRel*20),alertT,alertD,kind,S.ch?Math.round(S.ch.bar):-1,S.ch?Math.ceil(S.ch.dur-S.ch.t):-1,S.crisisT>0,S.tapFx>0,$('#tut').className,($('#tut').textContent||'').length,(document.querySelector('.toast')||{}).textContent,S.captionT>0?$('#caption').textContent:''].join('|');if(k!==world.headKey){world.headKey=k;drawHead({objRel,objTxt,objSub,alertT,alertD,kind});}}if(S.frame%20===0){const k2=[S.found,Math.ceil(TOTAL-(S.t-(S.tStart||0))),Math.round(S.R/2),$('#stateLine').textContent,Math.round(player.x),Math.round(player.z)].join('|');if(k2!==world.wristKey){world.wristKey=k2;drawWrist();}}}
   renderer.render(scene,camera);
 }
 /* ---- world-space panels ---- */
@@ -1050,7 +1064,7 @@ function end(reason){
 }
 
 // debug/testing hook
-window.__game={S,get player(){return player},keys,get scene(){return scene},get renderer(){return renderer},get world(){return world},drawHead,drawWrist,productTypes,THREE,step:(n=60,dt=1/60)=>{player.tyaw=player.yaw;player.tpitch=player.pitch;for(let i=0;i<n;i++){if(!S.running)break;last=performance.now()-dt*1000;tick();}if(S.running)last=performance.now();},use,tap,startChallenge,CHALLENGES,aimed:()=>{const o=aimed();return o?{item:o.item,target:o.target,d:o.d}:null},src:()=>Object.keys(src),targets:()=>Object.fromEntries(Object.entries(targets).map(([k,m])=>[k,m.userData.home]))};
+window.__game={S,get player(){return player},keys,get scene(){return scene},get renderer(){return renderer},get world(){return world},drawHead,drawWrist,perfStart:()=>{window.__perf={n:0,dt:0,max:0,calls:0,tris:0};},perfRead:()=>{const P=window.__perf;return P?{frames:P.n,avgMs:+(P.dt/P.n*1000).toFixed(1),maxMs:+(P.max*1000).toFixed(1),calls:P.calls,tris:P.tris,merged:world.mergedStats,presenting:renderer.xr.isPresenting}:null;},productTypes,THREE,step:(n=60,dt=1/60)=>{player.tyaw=player.yaw;player.tpitch=player.pitch;for(let i=0;i<n;i++){if(!S.running)break;last=performance.now()-dt*1000;tick();}if(S.running)last=performance.now();},use,tap,startChallenge,CHALLENGES,aimed:()=>{const o=aimed();return o?{item:o.item,target:o.target,d:o.d}:null},src:()=>Object.keys(src),targets:()=>Object.fromEntries(Object.entries(targets).map(([k,m])=>[k,m.userData.home]))};
 
 if(/[?&]mute=1/.test(location.search)){$('#vol').value=0;}
 if(!navigator.xr){const w=document.createElement('div');w.className='warn';w.innerHTML='<div><strong>No headset detected.</strong> Open this page in the browser on a Meta Quest to play in VR. It still runs here as a flat preview.</div>';$('#start .wrap').insertBefore(w,$('#startBtn'));}
