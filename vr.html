@@ -220,7 +220,9 @@ h2.sec{font-size:26px;color:#fff}
 #chal .eyebrow{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--amber);font-weight:800}
 #chal .t{font-family:var(--display);font-size:clamp(24px,4.4vw,38px);color:#fff;line-height:1.05;margin-top:2px}
 #chal .d{font-size:14px;color:var(--muted);margin-top:4px}
-#game.chal-on #obj{visibility:hidden}
+#game{overflow:hidden}
+#game.chal-on #obj,#game.crisis-on #obj,#game.alert-on #obj{visibility:hidden}
+#crCount{font-family:var(--body);font-weight:800;font-size:18px;color:#fff;margin-top:10px}
 #cbar.hit{box-shadow:0 0 0 3px var(--lime),0 0 18px var(--lime)}
 #cbar{height:22px;transition:box-shadow .08s;background:#0f141b;border-radius:6px;overflow:hidden;margin:12px 0 4px;position:relative;border:1px solid rgba(255,255,255,.15)}
 #cfill{height:100%;width:0;background:linear-gradient(90deg,var(--lime),var(--amber) 55%,var(--pink) 85%,#ff2d55);transition:width .08s linear}
@@ -291,10 +293,10 @@ h2.sec{font-size:26px;color:#fff}
       <span id="k_auto"><kbd>T</kbd><i class="lbl">walk me there</i></span>
       <span id="k_use"><kbd>Enter</kbd><i class="lbl">pick up</i></span>
       <span id="k_rock"><kbd>Space</kbd><i class="lbl">tap fast to cope</i></span>
-      <span id="k_move" style="opacity:.6"><kbd>↑</kbd><kbd>←</kbd><kbd>→</kbd><i class="lbl">or walk yourself</i></span>
+      <span id="k_move" hidden></span>
       <span id="k_look" hidden></span><span id="k_esc" style="opacity:.6"><kbd>Esc</kbd><i class="lbl">stop</i></span>
     </div>
-    <div id="chal"><div class="box"><div class="eyebrow">Sensory challenge</div><div class="t" id="chalT">The lights</div><div class="d" id="chalD"></div><div id="cbar"><div id="cfill"></div></div><div id="cmeta"><span id="cleft">8 s</span><span id="cstate">Hold it together</span></div><div id="ckey"><div class="a" id="cact">Tap <b>SPACE</b> fast to rock</div><div class="k" id="ckeyBtn">SPACE</div></div></div></div>
+    <div id="chal"><div class="box"><div class="eyebrow">Sensory challenge</div><div class="t" id="chalT">The lights</div><div class="d" id="chalD"></div><div id="clbl" style="display:flex;justify-content:space-between;font-size:12px;font-weight:700;color:var(--muted);margin-top:12px"><span>Calm</span><span>Your overload: keep it out of the red</span><span style="color:#ff6fb5">Crisis</span></div><div id="cbar" style="margin-top:4px"><div id="cfill"></div></div><div id="cmeta"><span id="cleft">8 s</span><span id="cstate">Hold it together</span></div><div id="ckey"><div class="a" id="cact">Tap <b>SPACE</b> fast to rock</div><div class="k" id="ckeyBtn">SPACE</div></div></div></div>
     <div id="crisisMsg"><div><h2 id="crH">Freeze.</h2><p id="crP"></p></div></div>
     <button id="regBtn" type="button">Tap to regulate<small>SPACE</small></button>
     <div id="edge"></div>
@@ -794,15 +796,15 @@ function tap(){if(!S.running)return;let tapK=1;if(S.ch){const now=performance.no
 function actionFor(sense,seek){const P=S.profile;if(seek){if(P.vestib==='hypo')return 'spin on the spot';if(P.proprio==='hypo')return 'jump and stamp';return 'rock on your heels';}
   if(sense==='sound')return P.vestib==='hypo'?'rock and hum':'press your hands over your ears';if(sense==='light')return 'shield your eyes and look down';if(sense==='touch')return P.proprio==='hypo'?'squeeze yourself tight':'pull your arms in and breathe';if(sense==='smell')return 'breathe through your sleeve';return 'rock';}
 const CHALLENGES={
-  'Bread':{key:'Bread',id:'lights',title:'The lights',sense:'light',desc:'The fluorescent tubes above you start to flicker and glare.',dur:8,rate:16,stim:['fluorescent','clutter'],fx:'lights'},
-  'Bananas':{key:'Bananas',id:'smell',title:'The smell, and a bump',sense:'smell',desc:'The fruit smell hits in a wave and a trolley clips you from behind.',dur:8,rate:17,stim:['smell','bump'],fx:'smell'},
-  'Milk':{key:'Milk',id:'chill',title:'The chiller, and the tannoy',sense:'sound',desc:'The compressors drone, the cold gets into you, and an announcement you cannot decode cuts across it.',dur:9,rate:18,stim:['fridge','cold','tannoy'],fx:'cold'},
-  'Checkout':{key:'Checkout',id:'tills',hard:true,title:'The checkout',sense:'sound',desc:'Beeps, a crying child, chatter, the alarm test, and someone asking if you need help.',dur:10,rate:20,stim:['till','crowd','cry','staff','alarm'],fx:'tills'},
+  'Bread':{key:'Bread',id:'lights',title:'The lights',sense:'light',desc:'The fluorescent tubes above you start to flicker and glare.',descLow:'The lights are bright but flat, and you feel yourself drifting.',dur:8,rate:16,stim:['fluorescent','clutter'],fx:'lights'},
+  'Bananas':{key:'Bananas',id:'smell',title:'The smell, and a bump',sense:'smell',desc:'The fruit smell hits in a wave and a trolley clips you from behind.',descLow:'A trolley clips you from behind. Everything else feels far away.',dur:8,rate:17,stim:['smell','bump'],fx:'smell'},
+  'Milk':{key:'Milk',id:'chill',title:'The chiller, and the tannoy',sense:'sound',desc:'The compressors drone, the cold gets into you, and an announcement you cannot decode cuts across it.',descLow:'The chiller hums and an announcement drifts past. You feel yourself switching off.',dur:9,rate:18,stim:['fridge','cold','tannoy'],fx:'cold'},
+  'Checkout':{key:'Checkout',id:'tills',hard:true,title:'The checkout',sense:'sound',desc:'Beeps, a crying child, chatter, the alarm test, and someone asking if you need help.',descLow:'The checkout is busy and blurry, and someone is asking if you need help.',dur:10,rate:20,stim:['till','crowd','cry','staff','alarm'],fx:'tills'},
 };
 function startChallenge(ch){if(!S.running||S.ch)return;$('#game').classList.add('chal-on');$('#coach').innerHTML='';const hyper=S.profile[ch.sense]==='hyper';const seek=!hyper&&(S.profile.vestib==='hypo'||S.profile.proprio==='hypo');
   S.ch={...ch,t:0,bar:clamp(Math.max(S.R,0)*.5+28,0,45),taps:0,hyper,seek,rate:ch.rate*(ch.key===S.impossible?2.6:ch.hard?.6:.68)*(hyper?1:.65)*(S.reduced?.8:1),perTap:(hyper?5.0:6.0)*(ch.key===S.impossible?.45:1),impossible:ch.key===S.impossible,action:actionFor(ch.sense,seek),surgeT:rnd(1.2,2.2),missed:0};
   S.hit.add('challenge');ch.stim.forEach(k=>{if(k==='bump'){SFX.bump();impulse('bump',6,'touch',{shake:14});}else if(k==='alarm'){setTimeout(()=>{if(S.ch&&S.ch.id===ch.id){SFX.alarmS();S.alarmT=2.5;setActive('alarm',true);}},3200);}else if(k==='tannoy'){SFX.tannoy(3);setActive('tannoy',true);S.captionT=3;$('#caption').textContent='…ATTENTION… AISLE… …OFFER… …';S.listScramble=3;}else if(k==='staff'){setTimeout(()=>{if(S.ch){SFX.voice();$('#caption').textContent='"Hiya, do you need any help?"';S.captionT=3;}},2500);}else setActive(k,true);S.hit.add(k);});
-  const el=$('#chal');el.classList.add('on');el.classList.toggle('under',seek);$('#chalT').textContent=ch.title;$('#chalD').textContent=(seek?ch.desc+' You feel yourself drifting away from the task.':ch.desc)+(ch.hard?' Last one.':'');
+  const el=$('#chal');el.classList.add('on');el.classList.toggle('under',seek);$('#chalT').textContent=ch.title;$('#chalD').textContent=(hyper?ch.desc:(ch.descLow||ch.desc))+(ch.hard?' Last one.':'');
   $('#cact').innerHTML=`Tap <b>SPACE</b> fast to ${S.ch.action}`;$('#cstate').textContent=seek?'Stay with it':'Hold it together';
   coach('ch'+ch.id,'Sensory challenge','Tap A or X as fast as you can. Keep the bar out of the red until the challenge passes.','pink');}
 function tickChallenge(dt){const c=S.ch;if(!c)return;c.t+=dt;c.bar=clamp(c.bar+c.rate*dt*(1+c.t/c.dur*1.1),0,100);c.surgeT-=dt;if(c.surgeT<=0){c.surgeT=rnd(1.6,2.6);c.bar=clamp(c.bar+(c.hyper?7:5),0,100);S.impulses.push({t:0,shake:S.reduced?4:18,flash:S.reduced?0:.3});SFX.bump();$('#cstate').textContent='Surge';}
@@ -815,7 +817,7 @@ function crisis(c){$('#coach').innerHTML='';S.crises++;S.lastImpossible=!!c.impo
   const h=$('#crH'),pp=$('#crP');const imp=c.impossible?' That one could not be won, however fast you tapped. Sometimes nothing a person does is enough, and the environment has to change instead.':'';if(kind==='freeze'){h.textContent='Freeze.';pp.textContent='You know what you want to do. Your body will not do it. Wait it out.'+imp;SFX.bump();lp.frequency.setTargetAtTime(1400,AC.currentTime,.2);setTimeout(()=>{if(AC&&!S.shut)lp.frequency.setTargetAtTime(20000,AC.currentTime,.5);},4000);}
   else if(kind==='meltdown'){h.textContent='Acute dysregulation.';pp.textContent='Everything at once. The nervous system can no longer hold the load and discharges it outwardly. Not a choice, not bad behaviour, and it happens in public.'+imp;SFX.roar();S.impulses.push({t:0,shake:40,flash:.8});S.melt=true;}
   else{h.textContent='Sensory shutdown.';pp.textContent='The nervous system withdraws. Nothing is going in now. The shop carries on. You do not.'+imp;S.shut=true;lp.frequency.setTargetAtTime(380,AC.currentTime,.4);}
-  $('#crisisMsg').style.display='grid';$('#crisisMsg').classList.toggle('under',!!c.seek);
+  $('#crisisMsg').style.display='grid';$('#crisisMsg').classList.toggle('under',!!c.seek);if(!document.querySelector('#crCount'))$('#crP').insertAdjacentHTML('afterend','<div id="crCount"></div>');
   if(kind==='shutdown'){S.after={t:S.t+4.5,fn:()=>end('shutdown')};return;}
   S.after={t:S.t+(kind==='freeze'?4:5.2),fn:()=>{$('#crisisMsg').style.display='none';S.crisisT=0;S.melt=false;S.R=55;coach('after'+kind,'Still here','You came through it. The load has not gone anywhere, so tap Space between challenges to bring it down. '+(c.id==='tills'?'':'The next item is on the map.'),'blue');if(c.id==='tills')S.after={t:S.t+.3,fn:()=>end('unpaid')};}};}
 

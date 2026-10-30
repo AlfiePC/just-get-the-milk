@@ -1,4 +1,4 @@
-const V='jgtm-1793371273';const CORE=['./','./index.html','./vr.html','./manifest.webmanifest','./manifest-vr.webmanifest','./icon-192.png','./icon-512.png',
+const V='jgtm-1793372722';const CORE=['./','./index.html','./vr.html','./manifest.webmanifest','./manifest-vr.webmanifest','./icon-192.png','./icon-512.png',
 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js',
 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/environments/RoomEnvironment.js',
 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/geometries/RoundedBoxGeometry.js',
