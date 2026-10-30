@@ -206,6 +206,11 @@ h2.sec{font-size:26px;color:#fff}
 #earChip.on{display:block;border-color:var(--lime)}
 @media (max-width:760px){#ctrls{display:none}#alert .t,#alert .n{font-size:20px}#alert .d{font-size:12px}#profile{display:none}#obj{max-width:calc(100% - 24px);overflow:hidden}#objDist{display:none}#coach{max-width:58%;bottom:140px}#tut{max-width:calc(100% - 24px)}}
 #endTitle.crisis{color:var(--pink)}
+/* cold-playtest fixes: one instruction in one place */
+#tut,#clickHint,#feedBox{display:none!important}
+#hud{grid-template-columns:1fr 150px 1.4fr}
+#obj{font-size:18px;padding:8px 10px 8px 14px;border-width:2px}
+#objText{font-weight:800}
 /* v7: challenge panel, single regulate key, simplified controls */
 #chal{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:6;display:none;width:min(600px,calc(100% - 32px));text-align:center}
 #chal.on{display:block}
@@ -247,7 +252,8 @@ h2.sec{font-size:26px;color:#fff}
   <div class="wrap">
     <div class="eyebrow">A two-minute experience from Prior's Court</div>
     <h1>Just Get the Milk</h1>
-    <p class="lead">Find three things in a supermarket and pay. Easy. Except you are shopping as an autistic young person, and the shop was not built for you.</p>
+    <p class="lead">Find three things in a supermarket and pay. Easy. Except you are shopping as an autistic young person, and the shop was not built for you. Each game deals you a different sensory profile.</p>
+    <button class="big" id="startBtn">Start</button>
     <div class="keys" style="grid-template-columns:repeat(3,1fr)">
       <div><b>Walk</b><span class="kk"><kbd>T</kbd></span>Press T and you are walked to the next item.</div>
       <div><b>Pick up</b><span class="kk"><kbd>Enter</kbd></span>Walk up to the bouncing item and press Enter.</div>
@@ -256,7 +262,6 @@ h2.sec{font-size:26px;color:#fff}
     <div class="warn">
       <div><strong>Loud, layered sound and pulsing light. Meant to be uncomfortable.</strong> Headphones on, volume low to start. Not for anyone with photosensitive epilepsy or their own sensory sensitivities. <kbd>Esc</kbd> stops everything.</div>
     </div>
-    <button class="big" id="startBtn">Start</button>
     <details style="font-size:14px;color:var(--muted)"><summary style="cursor:pointer;color:var(--text)">Settings and the research behind this</summary>
     <div class="controls" style="margin-top:12px">
       <div class="ctl"><label for="vol">Volume</label><input id="vol" type="range" min="0" max="100" value="35"></div>
@@ -274,7 +279,7 @@ h2.sec{font-size:26px;color:#fff}
     <canvas id="c3d"></canvas>
     <div id="cross"></div><div id="prompt"></div><div id="caption"></div>
     <div id="tut"><div class="n">1</div><div class="h">Look around</div><div class="d">Move your mouse</div></div>
-    <div id="obj"><span class="arrow">➤</span><span id="objText">Find: Bread</span><small id="objDist"></small><button id="autoBtn" type="button">Walk me there (T)</button></div>
+    <div id="obj"><span class="arrow">➤</span><span id="objText">Find: Bread</span><small id="objDist"></small><button id="autoBtn" type="button">Walk (T)</button></div>
     <div id="coach"></div>
     <div id="profile"></div>
     <div id="basket">🧺 Basket 0/4</div>
@@ -305,7 +310,7 @@ h2.sec{font-size:26px;color:#fff}
   </div>
   <div id="hud">
     <div class="hudCol">
-      <div class="hudTitle"><span>Find these</span><span id="timer">90</span></div>
+      <div class="hudTitle"><span>Find these</span><span><span id="timer">105</span><small style="font-size:11px;color:var(--muted);margin-left:4px">s left</small></span></div>
       <ul id="list"></ul>
     </div>
     <div class="hudCol" id="mapCol">
@@ -509,7 +514,7 @@ function feedRemove(k){const li=$('#f_'+k);if(li)li.remove();}
 function flashFeed(k){let li=$('#f_'+k);if(!li){feedAdd(k);li=$('#f_'+k);setTimeout(()=>{if(!S.active.has(k))feedRemove(k);},1800);}li.style.background='#2a1e2a';setTimeout(()=>{if(li)li.style.background='';},300);}
 function impulse(k,amount,sense,{shake=0,flash=0}={}){S.hit.add(k);const a=amount*gainFor(sense)*(1+clamp(S.R,0,100)/150);S.R=clamp(S.R+a,-100,100);S.impulses.push({t:0,shake:S.reduced?shake*.2:shake,flash:S.reduced?0:flash});flashFeed(k);}
 function onBeep(id){if(!S.running||S.shut)return;const d=dist(src[id].pos);if(d<9){impulse('till',4*(1-d/9),'sound',{shake:5});S.beepT=.4;}}
-function coach(key,title,body,cls){ if(S.coached.has(key)) return; S.coached.add(key); const d=document.createElement('div'); d.className='toast '+(cls||''); d.innerHTML=`<b>${title}</b>${body}`; const box=$('#coach'); while(box.children.length>=2) box.firstChild.remove(); box.appendChild(d); setTimeout(()=>{d.style.transition='opacity .5s';d.style.opacity=0;setTimeout(()=>d.remove(),600);},7000); }
+function coach(key,title,body,cls){ if(S.ch&&!/^won|^after/.test(key)) return; if(S.coached.has(key)) return; S.coached.add(key); const d=document.createElement('div'); d.className='toast '+(cls||''); d.innerHTML=`<b>${title}</b>${body}`; const box=$('#coach'); while(box.children.length>=2) box.firstChild.remove(); box.appendChild(d); setTimeout(()=>{d.style.transition='opacity .5s';d.style.opacity=0;setTimeout(()=>d.remove(),600);},7000); }
 
 /* =====================================================================
    WORLD
@@ -736,7 +741,7 @@ function inZone(id){const z=ZONES.find(z=>z.id===id);return player.x>=z.x1&&play
    INPUT
    ===================================================================== */
 const keys={}; let locked=false; const joy={active:false,id:null,ox:0,oy:0,dx:0,dy:0}; const look={id:null,lx:0,ly:0,moved:0};
-document.addEventListener('keydown',e=>{if(e.key==='Escape'){stopAll(true);return;}keys[e.code]=true;if(!S.running)return;if(e.code==='KeyE'||e.code==='Enter'){e.preventDefault();use();}if(e.code==='Space'){e.preventDefault();if(!e.repeat)tap();}if(e.code==='KeyT'&&!e.repeat)autoWalk();if((e.code==='ArrowLeft'||e.code==='ArrowRight')&&S.auto)autoWalk();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){stopAll(true);return;}keys[e.code]=true;if(!S.running)return;if(e.code==='KeyE'||e.code==='Enter'){e.preventDefault();use();}if(e.code==='Space'){e.preventDefault();if(!e.repeat)tap();}if(e.code==='KeyT'&&!e.repeat)autoWalk();if((e.code==='ArrowLeft'||e.code==='ArrowRight')&&S.auto)cancelAuto();});
 document.addEventListener('keyup',e=>{keys[e.code]=false;});
 const cv=()=>$('#c3d');
 function capture(){try{const p=cv().requestPointerLock();if(p&&p.catch)p.catch(()=>{});}catch(e){}}
@@ -768,11 +773,12 @@ function collect(m){if(m.userData.done)return;m.userData.done=true;m.userData.fl
   const ch=CHALLENGES[m.userData.item];if(ch)S.pendingCh={ch,t:.7};}
 /* ---- auto-walk: take me to the next item ---- */
 function autoDest(){const nextT=TARGETS.find(t=>!targets[t.id].userData.done);if(nextT){const h=targets[nextT.id].userData.home;return {x:h.x+Math.sin(h.ry)*1.7,z:h.z+Math.cos(h.ry)*1.7,face:{x:h.x,z:h.z},name:nextT.id};}if(S.checkout)return {x:-5,z:8.4,face:{x:-5,z:11},name:'checkout 2'};return null;}
-function autoWalk(){if(!S.running)return;if(S.auto){S.auto=null;$('#autoBtn').classList.remove('on');$('#autoBtn').textContent='Walk me there (T)';return;}const d=autoDest();if(!d)return;const a=nearestNode(player.x,player.z),b=nearestNode(d.x,d.z);const path=a===b?[]:navPath(a,b);S.auto={pts:[...path.map(i=>NAV.nodes[i]),{x:d.x,z:d.z}],face:d.face,name:d.name};$('#autoBtn').classList.add('on');$('#autoBtn').textContent='Walking… (any key stops)';S.hit.add('auto');}
-function autoTick(dt){const a=S.auto;if(!a)return {fx:0,fz:0};const busy=S.shut||S.dis||S.melt||S.crisisT>0||!!S.ch;if(busy)return {fx:0,fz:0};const w=a.pts[0];if(!w){player.tyaw=Math.atan2(-(a.face.x-player.x),-(a.face.z-player.z));S.auto=null;$('#autoBtn').classList.remove('on');$('#autoBtn').textContent='Walk me there (T)';return {fx:0,fz:0};}
+function cancelAuto(){if(!S.auto)return;S.auto=null;$('#autoBtn').classList.remove('on');$('#autoBtn').textContent='Walk (T)';}
+function autoWalk(){if(!S.running)return;const d=autoDest();if(!d)return;const a=nearestNode(player.x,player.z),b=nearestNode(d.x,d.z);const path=a===b?[]:navPath(a,b);S.auto={pts:[...path.map(i=>NAV.nodes[i]),{x:d.x,z:d.z}],face:d.face,name:d.name};$('#autoBtn').classList.add('on');$('#autoBtn').textContent='Walking…';S.hit.add('auto');}
+function autoTick(dt){const a=S.auto;if(!a)return {fx:0,fz:0};const busy=S.shut||S.dis||S.melt||S.crisisT>0||!!S.ch;if(busy)return {fx:0,fz:0};a.chkT=(a.chkT||0)+dt;if(a.chkT>1.2){const mv=a.lx===undefined?1:Math.hypot(player.x-a.lx,player.z-a.lz);a.lx=player.x;a.lz=player.z;a.chkT=0;if(mv<.2&&a.pts.length){a.stalls=(a.stalls||0)+1;if(a.stalls>=2){const t=a.pts[0];player.x=t.x;player.z=t.z;a.pts.shift();a.stalls=0;}else{a.pts.shift();}}}const w=a.pts[0];if(!w){player.tyaw=Math.atan2(-(a.face.x-player.x),-(a.face.z-player.z));S.auto=null;$('#autoBtn').classList.remove('on');$('#autoBtn').textContent='Walk (T)';return {fx:0,fz:0};}
   const dx=w.x-player.x,dz=w.z-player.z,d=Math.hypot(dx,dz);if(d<(a.pts.length===1?.6:.5)){a.pts.shift();return {fx:0,fz:0};}const want=Math.atan2(-dx,-dz);let diff=((want-player.tyaw+Math.PI*3)%(Math.PI*2))-Math.PI;player.tyaw+=diff*Math.min(1,dt*6);player.tpitch+=(0-player.tpitch)*Math.min(1,dt*4);return {fx:0,fz:Math.abs(diff)<1.0?1:.3};}
 /* ---- regulation key: one key for everything ---- */
-function tap(){if(!S.running)return;S.tapT=.12;$('#regBtn').classList.add('tap');$('#ckeyBtn').classList.add('tap');setTimeout(()=>{$('#regBtn').classList.remove('tap');$('#ckeyBtn').classList.remove('tap');},90);
+function tap(){if(!S.running)return;if(S.ch){if(S.t-(S.lastTapT??-1)<.09)return;S.lastTapT=S.t;}S.tapT=.12;$('#regBtn').classList.add('tap');$('#ckeyBtn').classList.add('tap');setTimeout(()=>{$('#regBtn').classList.remove('tap');$('#ckeyBtn').classList.remove('tap');},90);
   S.tapFx=1;const act=S.ch?S.ch.action:'rock';const Rd=S.reduced;
   if(/eyes/.test(act))S.blink=1;else if(/ears|hum/.test(act)){if(world.duck){world.duck.gain.cancelScheduledValues(AC.currentTime);world.duck.gain.setValueAtTime(.35,AC.currentTime);world.duck.gain.setTargetAtTime(1,AC.currentTime+.08,.12);}S.bobKick=.03;}
   else if(/spin/.test(act))S.yawKick=(Rd?.12:.45);else if(/jump|stamp/.test(act))S.bobKick=(Rd?.05:.16);else if(/rock/.test(act))S.bobKick=(Rd?.03:.09);else S.fovKick=(Rd?3:9);
@@ -800,7 +806,7 @@ function tickChallenge(dt){const c=S.ch;if(!c)return;c.t+=dt;c.bar=clamp(c.bar+c
 function endChallenge(won){const c=S.ch;S.ch=null;tutDone(4);$('#hud').style.filter='';$('#hud').style.transform='';$('#chal').classList.remove('on');c.stim.forEach(k=>{if(k!=='bump'&&k!=='alarm'&&k!=='tannoy'&&k!=='staff')setActive(k,false);});setActive('alarm',false);setActive('tannoy',false);S.alarmT=0;
   if(won){S.R=clamp((c.seek?-1:1)*c.bar*.45,-100,100);SFX.good();coach('won'+c.id,'You held it together','It cost '+c.taps+' taps in '+Math.round(c.dur)+' seconds'+(c.missed?', and '+c.missed+' of them never registered':'')+'. For an autistic person that effort is invisible to everyone else in the shop.','blue');if(c.id==='tills')S.after={t:S.t+.6,fn:()=>end('done')};}
   else crisis(c);}
-function crisis(c){S.crises++;S.lastImpossible=!!c.impossible;S.hit.add('cascade');const kind=S.crises===1?'freeze':S.crises===2?'meltdown':'shutdown';S.hit.add(kind);S.crisisT=kind==='freeze'?4:5;S.R=92;
+function crisis(c){S.crises++;S.lastImpossible=!!c.impossible;if(c.impossible)S.impLost=true;S.hit.add('cascade');const kind=S.crises===1?'freeze':S.crises===2?'meltdown':'shutdown';S.hit.add(kind);S.crisisT=kind==='freeze'?4:5;S.R=92;
   const h=$('#crH'),pp=$('#crP');const imp=c.impossible?' That one could not be won, however fast you tapped. Sometimes nothing a person does is enough, and the environment has to change instead.':'';if(kind==='freeze'){h.textContent='Freeze.';pp.textContent='You know what you want to do. Your body will not do it. Wait it out.'+imp;SFX.bump();lp.frequency.setTargetAtTime(1400,AC.currentTime,.2);setTimeout(()=>{if(AC&&!S.shut)lp.frequency.setTargetAtTime(20000,AC.currentTime,.5);},4000);}
   else if(kind==='meltdown'){h.textContent='Acute dysregulation.';pp.textContent='Everything at once. The nervous system can no longer hold the load and discharges it outwardly. Not a choice, not bad behaviour, and it happens in public.'+imp;SFX.roar();S.impulses.push({t:0,shake:40,flash:.8});S.melt=true;}
   else{h.textContent='Sensory shutdown.';pp.textContent='The nervous system withdraws. Nothing is going in now. The shop carries on. You do not.'+imp;S.shut=true;lp.frequency.setTargetAtTime(380,AC.currentTime,.4);}
@@ -840,7 +846,7 @@ function start(){
   ensureAudio();if(AC.state==='suspended')AC.resume();master.gain.value=$('#vol').value/100*.9;
   lowGfx=+$('#gfx').value<=1; if(!renderer)buildWorld(); else setQuality(+$('#gfx').value);
   Object.assign(S,{running:true,t:0,R:0,peak:0,low:0,found:0,stimT:0,impulses:[],shut:false,dis:false,ended:false,captionT:0,listScramble:0,beepT:0,rock:false,press:false,spinT:0,useT:0,useWhat:null,lagMax:0,tannoyNext:16,bumpCool:0,lastAct:0,held:null,walkT:0,stepT:0,lookAcc:0,walkAcc:0,tut:0,tutT:0,timerOn:false,wrong:0,next:null});
-  S.reduced=$('#reduced').checked;S.profile=S.keepProfile&&S.profile.sound?S.profile:dealProfile();S.keepProfile=false;S.ear=false;S.melt=false;S.checkout=false;S.hbT=0;S.freezeT=0;S.flightT=0;S.loopT=0;S.crisisCool=0;S.staffT=0;S.alarmT=0;S.flightEnd=false;S.events=[];S.ch=null;S.crises=0;S.crisisT=0;S.taps=0;S.chTills=false;S.pendingCh=null;S.after=null;S.impossible=pick(['Bread','Bananas','Milk']);S.auto=null;$('#chal').classList.remove('on');$('#crisisMsg').style.display='none';if(world.staff){world.staff.m.visible=false;}$('#alert').classList.remove('on');$('#edge').style.opacity=0;S.active.clear();S.hit.clear();S.coached.clear();$('#feed').innerHTML='';$('#coach').innerHTML='';$('#stateMsg').style.display='none';$('#basket').textContent='🧺 Basket 0/4';$('#obj').classList.remove('top');
+  S.reduced=$('#reduced').checked;S.profile=S.keepProfile&&S.profile.sound?S.profile:dealProfile();S.keepProfile=false;S.ear=false;S.melt=false;S.checkout=false;S.hbT=0;S.freezeT=0;S.flightT=0;S.loopT=0;S.crisisCool=0;S.staffT=0;S.alarmT=0;S.flightEnd=false;S.events=[];S.ch=null;S.crises=0;S.crisisT=0;S.taps=0;S.chTills=false;S.impLost=false;S.lastTapT=-1;S.pendingCh=null;S.after=null;S.impossible=pick(['Bread','Bananas','Milk']);S.auto=null;$('#chal').classList.remove('on');$('#crisisMsg').style.display='none';if(world.staff){world.staff.m.visible=false;}$('#alert').classList.remove('on');$('#edge').style.opacity=0;S.active.clear();S.hit.clear();S.coached.clear();$('#feed').innerHTML='';$('#coach').innerHTML='';$('#stateMsg').style.display='none';$('#basket').textContent='🧺 Basket 0/4';$('#obj').classList.remove('top');
   Object.assign(player,{x:0,z:-15.3,yaw:Math.PI,pitch:0,tyaw:Math.PI,tpitch:0,vx:0,vz:0});S.chimed=false;
   Object.values(targets).forEach(m=>{m.userData.done=false;m.visible=true;const h=m.userData.home;m.position.set(h.x,h.y,h.z);m.rotation.set(0,h.ry,0);});Object.values(markers).forEach(m=>m.visible=true);markers.Checkout.visible=false;
   $('#profile').innerHTML=Object.entries(S.profile).map(([k,v])=>`<span class="chip ${v}">${SENSES[k].ic} ${SENSES[k].name.split(' (')[0].split(' &')[0]} <small>${v==='hyper'?'↑ too much':'↓ needs more'}</small></span>`).join('');
@@ -848,9 +854,9 @@ function start(){
   addSrc('fluorescent',.45,null,BUILD.fluorescent);addSrc('music',.3,[0,0],BUILD.music);addSrc('crowd',.7,[-5,12],BUILD.crowd);addSrc('fridge',.6,[15.5,-1],BUILD.fridge);addSrc('cry',.5,[6,-6],BUILD.cry);addSrc('fan',.5,[-5,-14],BUILD.fan);addSrc('stress',.6,null,BUILD.stress);addSrc('tinnitus',.16,null,BUILD.tinnitus);
   [-11,-5,1].forEach((x,i)=>addSrc('till'+i,.5,[x,11],BUILD.till));
   setActive('fluorescent',true);setActive('music',true);
-  show('game');setTimeout(()=>$('#stage').focus(),50);$('#clickHint').style.display=isTouch?'none':'block';setTimeout(()=>{$('#clickHint').style.display='none';},9000);onResize();tutShow(0);
-  {const up=Object.entries(S.profile).filter(([k,v])=>v==='hyper').map(([k])=>SENSES[k].name.split(' (')[0].toLowerCase());const dn=Object.entries(S.profile).filter(([k,v])=>v==='hypo').map(([k])=>SENSES[k].name.split(' (')[0].toLowerCase());
-  coach('welcome','Your sensory profile this time',`<b style="color:var(--pink);display:inline">Turned up</b> (everything is too much): ${up.join(', ')}.<br><b style="color:var(--sky);display:inline">Turned down</b> (your body needs more): ${dn.join(', ')}.<br>The chips at the top left are your reminder. The meter below shows how you are coping.`,'blue');}
+  show('game');setTimeout(()=>$('#stage').focus(),50);onResize();tutShow(0);
+  {const up=Object.entries(S.profile).filter(([k,v])=>v==='hyper').map(([k])=>SENSES[k].name.split(' (')[0].toLowerCase());const dn=Object.entries(S.profile).filter(([k,v])=>v==='hypo').map(([k])=>SENSES[k].name.split(' (')[0].toLowerCase());}
+
   last=performance.now();cancelAnimationFrame(raf);raf=requestAnimationFrame(tick);
 }
 function stopAll(toStart=true){S.running=false;cancelAnimationFrame(raf);if(document.pointerLockElement)document.exitPointerLock();if(AC){Object.keys(src).forEach(removeSrc);lp.frequency.value=20000;wet.gain.value=0;dry.gain.value=1;if(world.dis){const D=world.dis;D.wet.gain.value=0;D.dry.gain.value=1;D.tDepth.gain.value=0;D.trem.gain.value=1;D.pDepth.gain.value=0;D.pan.pan.value=0;world.duck.gain.cancelScheduledValues(AC.currentTime);world.duck.gain.value=1;}}$('#caption').style.opacity=0;const ch=$('#clickHint');if(ch)ch.style.display='none';$('#alert').classList.remove('on');$('#edge').style.opacity=0;S.alertKind='';$('#chal').classList.remove('on');$('#crisisMsg').style.display='none';$('#hud').style.filter='';$('#hud').style.transform='';clearInterval(countdownTimer);if(toStart)show('start');}
@@ -873,7 +879,7 @@ function tick(){
   if(S.alarmT>0){S.alarmT-=dt;const ph=Math.floor(S.t*2)%2;if(ph!==S.alarmPh){S.alarmPh=ph;if(ph)impulse('alarm',2.5,'sound',{shake:S.reduced?0:5,flash:S.reduced?0:.22});}if(S.alarmT<=0)setActive('alarm',false);}
   if(S.melt&&S.crisisT>0&&Math.random()<.4)S.impulses.push({t:0,shake:S.reduced?6:28,flash:Math.random()*.3});
   // ---- movement ----
-  let fx=0,fz=0;if(keys.KeyW||keys.ArrowUp)fz+=1;if(keys.KeyS||keys.ArrowDown)fz-=1;if(keys.KeyA)fx-=1;if(keys.KeyD)fx+=1;if(S.auto&&(fx||fz||joy.active||drag.on))autoWalk();const au=autoTick(dt);fx+=au.fx;fz+=au.fz;const lg=lookGain()*dt*1.9;if(keys.ArrowLeft){player.tyaw+=lg;S.lookAcc+=lg;}if(keys.ArrowRight){player.tyaw-=lg;S.lookAcc+=lg;}if(joy.active){fx+=joy.dx;fz-=joy.dy;}
+  let fx=0,fz=0;if(keys.KeyW||keys.ArrowUp)fz+=1;if(keys.KeyS||keys.ArrowDown)fz-=1;if(keys.KeyA)fx-=1;if(keys.KeyD)fx+=1;if(S.auto&&(fx||fz||joy.active||drag.on))cancelAuto();const au=autoTick(dt);fx+=au.fx;fz+=au.fz;const lg=lookGain()*dt*1.9;if(keys.ArrowLeft){player.tyaw+=lg;S.lookAcc+=lg;}if(keys.ArrowRight){player.tyaw-=lg;S.lookAcc+=lg;}if(joy.active){fx+=joy.dx;fz-=joy.dy;}
   const busy=S.shut||S.dis||S.melt||S.crisisT>0||!!S.ch;
   const spd=busy?0:(S.auto?4.0:3.2)*(1-over*.35)*(1-under*.3*((P.proprio==='hypo')?1:.3));
   const sin=Math.sin(player.yaw),cos=Math.cos(player.yaw);
@@ -904,7 +910,7 @@ function tick(){
   S.dR=dR;if(!S.shut&&!S.dis&&!S.melt&&!S.ch&&S.crisisT<=0)S.R=clamp(S.R+dR*dt,-100,100);
   S.peak=Math.max(S.peak,S.R);S.low=Math.min(S.low,S.R);
   if(n>=3)S.hit.add('cascade');if(S.R>55)S.hit.add('tunnel');if(S.R<-40){S.hit.add('hunger');if(!S.active.has('hunger'))setActive('hunger',true);}else setActive('hunger',false);
-  if(S.R>30&&!S.ch)coach('over','Your meter is climbing','Every sound and light here adds to it, and it does not reset on its own. Tap <kbd>Space</kbd> fast to regulate, or walk away from the noise.');
+  if(S.R>30&&!S.ch)coach('over','Your meter is climbing','Every sound and light here adds to it, and it does not reset on its own. Tap <kbd>Space</kbd> fast to cope.');
   if(S.R>75&&!S.ch)coach('over2','Nearly at crisis','Get out of the noise now and tap <kbd>Space</kbd>. At 100 you go into crisis.','pink');
   if(S.R<-25&&!S.ch)coach('under','Your body is asking for input','You are under-stimulated. Tap <kbd>Space</kbd> fast to '+actionFor('vestib',true)+'.','blue');
   if(S.R<-70&&!S.ch)coach('under2','Switching off','The task is slipping away. Tap <kbd>Space</kbd> now or you will disengage completely.','blue');
@@ -916,7 +922,7 @@ function tick(){
   // ---- tutorial & timer ----
   tutTick(dt);
   if(S.found===NEED&&!S.checkout){S.checkout=true;markers.Checkout.visible=true;coach('pay','All three. Now pay.','Follow the marker to checkout 2. It is the loudest place in the shop, and the last challenge.','blue');}
-  if(S.checkout&&!S.ended&&!S.ch&&!S.chTills&&Math.hypot(player.x-(-5),player.z-8.4)<1.6){S.chTills=true;S.auto=null;$('#autoBtn').classList.remove('on');$('#autoBtn').textContent='Walk me there (T)';startChallenge(CHALLENGES.Checkout);}
+  if(S.checkout&&!S.ended&&!S.ch&&!S.chTills&&Math.hypot(player.x-(-5),player.z-8.4)<1.6){S.chTills=true;S.auto=null;$('#autoBtn').classList.remove('on');$('#autoBtn').textContent='Walk (T)';startChallenge(CHALLENGES.Checkout);}
   if(S.timerOn){if(S.t>=TOTAL+(S.tStart||0))return end('time');}else S.tStart=S.t;
   $('#timer').textContent=Math.max(0,Math.ceil(TOTAL-(S.t-(S.tStart||0))));
   render(dt);raf=requestAnimationFrame(tick);
@@ -978,6 +984,7 @@ function render(dt){
   const nextT=TARGETS.find(t=>!targets[t.id].userData.done);
   if(!nextT){const dx=-5-player.x,dz=8.4-player.z;const d=Math.hypot(dx,dz);const rel=Math.atan2(dx,dz)-(player.yaw+Math.PI);$('#obj .arrow').style.transform=`rotate(${(-rel*180/Math.PI-90).toFixed(0)}deg)`;$('#objText').textContent=S.auto?'Walking to checkout 2':'Pay at checkout 2';$('#objDist').textContent=`🧾 ${d.toFixed(0)} m`;}
   if(nextT){const m=targets[nextT.id];const dx=m.userData.home.x-player.x,dz=m.userData.home.z-player.z;const d=Math.hypot(dx,dz);const rel=Math.atan2(dx,dz)-(player.yaw+Math.PI);$('#obj .arrow').style.transform=`rotate(${(-rel*180/Math.PI-90).toFixed(0)}deg)`;$('#objText').textContent=S.auto?`Walking to ${S.auto.name}`:`Find: ${nextT.id}`;$('#objDist').textContent=`${nextT.ic} ${TARGETS.find(t=>t.id===nextT.id).zone} · ${d.toFixed(0)} m`;document.querySelectorAll('#list li').forEach(li=>li.classList.toggle('next',li.id==='li_'+nextT.id.replace(/\s/g,'_')));}
+  {let ins;if(S.ch)ins='Tap Space as fast as you can';else if(S.crisisT>0)ins='Wait. It will pass.';else if(a)ins='Press Enter to pick up '+a.item.toLowerCase();else if(S.auto)ins='Walking you to '+(S.auto.name==='checkout 2'?'the checkout':'the '+S.auto.name.toLowerCase())+'…';else if(!nextT)ins='Press T to walk to the checkout. You pay when you get there.';else ins='Press T to walk to the '+nextT.id.toLowerCase();if($('#objText').textContent!==ins)$('#objText').textContent=ins;}
   // beep scramble, captions, list fade
   if(S.beepT>0){S.beepT-=dt;if(Math.random()<.3){const ts=[...document.querySelectorAll('#list .txt')];const t=ts[Math.floor(Math.random()*ts.length)];if(t){t.textContent=scramble(t.dataset.t);setTimeout(()=>{t.textContent=t.dataset.t},260);}}}
   if(S.captionT>0){S.captionT-=dt;$('#caption').style.opacity=1;}else $('#caption').style.opacity=0;
@@ -989,7 +996,7 @@ function render(dt){
   const al=$('#alert');let kind='';if(!S.shut&&!S.dis&&!S.melt&&!S.ch&&S.crisisT<=0){if(R>50)kind='over';else if(R<-35)kind='under';}
   if(kind!==S.alertKind){S.alertKind=kind;al.classList.toggle('on',!!kind);al.classList.toggle('under',kind==='under');$('#edge').classList.toggle('under',kind==='under');}
   if(kind){$('#alertN').textContent=Math.round(R);
-    if(kind==='over'){$('#alertT').textContent=R>80?'Overload. Crisis close.':'Overload rising';$('#alertD').innerHTML='Tap <kbd>Space</kbd> fast to '+actionFor('sound',false)+' &nbsp;·&nbsp; walk away from the noise';}
+    if(kind==='over'){$('#alertT').textContent=R>80?'Overload. Crisis close.':'Overload rising';$('#alertD').innerHTML='Tap <kbd>Space</kbd> fast to '+actionFor('sound',false);}
     else{$('#alertT').textContent=R<-70?'Switching off':'Under-stimulated';$('#alertD').innerHTML='Your body needs input. Tap <kbd>Space</kbd> fast to '+actionFor('vestib',true);}
     const rate=S.dR||0;const left=kind==='over'?100-R:R+100;const secs=(kind==='over'&&rate>0)||(kind==='under'&&rate<0)?left/Math.abs(rate):0;$('#alertC').textContent=secs>0&&secs<20?`Crisis in about ${Math.ceil(secs)} s`:(Math.abs(R)>85?'At the edge':'');
     $('#edge').style.opacity=clamp((Math.abs(R)-(kind==='over'?50:35))/40,0,1)*(.5+Math.sin(S.t*6)*.2);}
@@ -1019,7 +1026,7 @@ function end(reason){
   const eb={unpaid:`Left without paying, ${Math.round(S.t)} seconds in`,flight:`Left the shop, ${Math.round(S.t)} seconds in`,shutdown:`Sensory shutdown, ${Math.round(S.t)} seconds in`,meltdown:`Acute dysregulation, ${Math.round(S.t)} seconds in`,disengage:`Disengaged, ${Math.round(S.t)} seconds in`,done:`Paid and out in ${Math.round(S.t)} seconds`,time:"Time's up"}[reason];$('#endTitle').classList.toggle('crisis',['shutdown','meltdown','disengage','flight','unpaid'].includes(reason));
   $('#endEyebrow').textContent=eb;$('#endTitle').textContent=`You got ${S.found} of ${NEED} items.`;
   $('#endTake').textContent={done:'You did it. Now look at what it cost.',time:'Ninety seconds was not enough for the person you were.',unpaid:'You found everything, and still could not get out.'}[reason]||'The shop made a simple job impossible for the person you were.';
-  $('#endLead').textContent={unpaid:'The checkout was the loudest place in the shop and the last straw. You put the basket down and walked out. Many autistic adults describe doing exactly this, and then not going back.',flight:'You did not finish. You got out, which is what every cell in your body was asking for. The list and the plan stopped existing the moment the exit did. Many autistic adults simply stop going to shops for this reason.',meltdown:'You did not finish. The environment kept adding load until your nervous system could no longer regulate it. In a real shop this is the moment other people stare. It is not a failure of the person. It is a failure of the place, and of the people who could have made it easier.',shutdown:'You did not finish. The load reached the point where your nervous system withdrew and stopped taking anything in. Autistic shoppers in the Reading study described exactly this: once inside, there is no way out.',disengage:'You did not finish. The shop gave your body none of the input it needed, and the task quietly disappeared. This is the side of sensory difference that gets missed, because it looks like "not paying attention".',done:'You finished, and paid, in the loudest corner of the shop. Now look at what it cost: every challenge you beat was invisible effort nobody else in the shop could see. In a real shop there is no key to tap, only the rocking or the hands over the ears, and the people who stare at it.',time:'A three-item list is not hard. The environment made it hard for the person you were. Even non-autistic visitors to the Reading research supermarket rushed through and missed items in the high-sensory version.'}[reason];if(S.crises)$('#endLead').textContent+=` You went into crisis ${S.crises} time${S.crises>1?'s':''}.`;$('#endLead').textContent+=` The challenge that could not be won this time was the ${S.impossible==='Checkout'?'checkout':S.impossible.toLowerCase()}.`;
+  $('#endLead').textContent={unpaid:'The checkout was the loudest place in the shop and the last straw. You put the basket down and walked out. Many autistic adults describe doing exactly this, and then not going back.',flight:'You did not finish. You got out, which is what every cell in your body was asking for. The list and the plan stopped existing the moment the exit did. Many autistic adults simply stop going to shops for this reason.',meltdown:'You did not finish. The environment kept adding load until your nervous system could no longer regulate it. In a real shop this is the moment other people stare. It is not a failure of the person. It is a failure of the place, and of the people who could have made it easier.',shutdown:'You did not finish. The load reached the point where your nervous system withdrew and stopped taking anything in. Autistic shoppers in the Reading study described exactly this: once inside, there is no way out.',disengage:'You did not finish. The shop gave your body none of the input it needed, and the task quietly disappeared. This is the side of sensory difference that gets missed, because it looks like "not paying attention".',done:'You finished, and paid, in the loudest corner of the shop. Now look at what it cost: every challenge you beat was invisible effort nobody else in the shop could see. In a real shop there is no key to tap, only the rocking or the hands over the ears, and the people who stare at it.',time:'A three-item list is not hard. The environment made it hard for the person you were. Even non-autistic visitors to the Reading research supermarket rushed through and missed items in the high-sensory version.'}[reason];if(S.crises)$('#endLead').textContent+=` You went into crisis ${S.crises} time${S.crises>1?'s':''}.`;if(S.impLost)$('#endLead').textContent+=` One challenge, the ${S.impossible.toLowerCase()}, could not be won however fast you tapped. Sometimes nothing a person does is enough, and the place has to change instead.`;
   $('#sItems').textContent=`${S.found}/${NEED}`;$('#sStimT').textContent=S.crises;$('#sStim').textContent=[...S.hit].filter(k=>STIM[k]&&STIM[k].s).length;{const cr=['freeze','meltdown','shutdown','disengage'].filter(k=>S.hit.has(k));if(cr.length)$('#endLead').textContent+=` Crises this run: ${cr.map(k=>STIM[k].name.toLowerCase()).join(', ')}.`;}
   $('#profCard').innerHTML=Object.entries(S.profile).map(([k,v])=>`<div class="${v}"><b>${SENSES[k].ic} ${SENSES[k].name} ${v==='hyper'?'↑':'↓'}</b><span>${SENSES[k][v]}</span></div>`).join('');
   const order=['challenge','fluorescent','clutter','music','crowd','till','fridge','cold','smell','tannoy','alarm','staff','bump','cry','fan','hunger','stimOK','cascade','tunnel','freeze','meltdown','shutdown','disengage'];
