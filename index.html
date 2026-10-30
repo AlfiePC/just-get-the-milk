@@ -126,7 +126,7 @@ input[type=checkbox]{width:18px;height:18px;accent-color:var(--lime)}
 /* HUD */
 #hud{position:absolute;left:0;right:0;bottom:0;height:190px;background:var(--panel);border-top:2px solid var(--panel2);display:grid;grid-template-columns:1fr 150px 1.2fr 1.4fr;padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px));z-index:2}
 #map{width:150px;height:150px;border-radius:6px;background:#0f141b}
-@media (max-width:760px){#hud{grid-template-columns:1fr 110px 1.2fr;height:214px}#feedBox{display:none}#map{width:110px;height:110px}#mapCol{padding:0 6px}}
+@media (max-width:760px){#hud{grid-template-columns:minmax(0,1fr) 90px minmax(0,1.2fr);height:214px;padding-left:10px;padding-right:10px}#map{width:90px;height:90px}#list{font-size:13px}#timer{font-size:20px}#meterLbl span{display:none}#meterLbl{justify-content:center}#stateLine,#feed,#list{overflow-wrap:anywhere}.hudCol{padding:0 6px}#feedBox{display:none}#map{width:110px;height:110px}#mapCol{padding:0 6px}}
 .hudCol{min-width:0;padding:0 12px;display:grid;grid-template-rows:auto 1fr;gap:6px;border-right:1px solid var(--panel2);align-content:start}
 .hudCol:last-child{border-right:0}.hudCol:first-child{padding-left:0}
 .hudTitle{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:700;display:flex;justify-content:space-between;align-items:center}
@@ -204,7 +204,7 @@ h2.sec{font-size:26px;color:#fff}
 #clickHint{inset:auto;left:50%;top:calc(max(10px,env(safe-area-inset-top,0px)) + 110px);transform:translateX(-50%);background:rgba(18,26,36,.9);border:1px solid rgba(255,255,255,.25);border-radius:10px;padding:10px 16px;font-size:14px;cursor:default;display:none;grid-template-columns:1fr;max-width:min(520px,calc(100% - 32px))}
 #earChip{position:absolute;right:10px;top:calc(max(8px,env(safe-area-inset-top,0px)) + 92px);z-index:4;background:rgba(18,26,36,.85);border:1px solid rgba(255,255,255,.2);border-radius:999px;padding:4px 10px;font-size:12px;font-weight:700;color:#fff;display:none}
 #earChip.on{display:block;border-color:var(--lime)}
-@media (max-width:760px){#ctrls{display:none}#alert .t,#alert .n{font-size:20px}#alert .d{font-size:12px}}
+@media (max-width:760px){#ctrls{display:none}#alert .t,#alert .n{font-size:20px}#alert .d{font-size:12px}#profile{display:none}#obj{max-width:calc(100% - 24px);overflow:hidden}#objDist{display:none}#coach{max-width:58%;bottom:140px}#tut{max-width:calc(100% - 24px)}}
 #endTitle.crisis{color:var(--pink)}
 /* v7: challenge panel, single regulate key, simplified controls */
 #chal{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:6;display:none;width:min(600px,calc(100% - 32px));text-align:center}
@@ -249,7 +249,7 @@ h2.sec{font-size:26px;color:#fff}
     <h1>Just Get the Milk</h1>
     <p class="lead">Find three things in a supermarket and pay. Easy. Except you are shopping as an autistic young person, and the shop was not built for you.</p>
     <div class="keys" style="grid-template-columns:repeat(3,1fr)">
-      <div><b>Walk</b><span class="kk"><kbd>T</kbd></span>Press T and you are walked to the next item. (Or use the arrow keys.)</div>
+      <div><b>Walk</b><span class="kk"><kbd>T</kbd></span>Press T and you are walked to the next item.</div>
       <div><b>Pick up</b><span class="kk"><kbd>Enter</kbd></span>Walk up to the bouncing item and press Enter.</div>
       <div><b>Cope</b><span class="kk"><kbd>Space</kbd></span>When the shop gets too much, tap Space as fast as you can. The screen tells you what you are doing.</div>
     </div>
@@ -423,7 +423,7 @@ const STIM={
   alarm:{ic:'🚨',sense:'hear',s:'sound',name:'Fire alarm test',live:'Deafening. No warning.',why:'Sudden alarms are consistently named as the single worst trigger. There is no way to prepare and no way to escape the sound.',effect:'A hard spike and a white flash every time it sounded.'},
   smash:{ic:'🍾',sense:'hear',s:'sound',name:'Bottle smashing',live:'Sudden, sharp, behind you.',why:'A sudden sharp sound behind you is a startle reflex for everyone. With hyperacusis it lands as pain and the load it adds does not fade.',effect:'The view jolted and your load jumped.'},
   staff:{ic:'🧑‍💼',sense:'hear',s:'sound',name:'Staff member: "Can I help?"',live:'A social demand on top of everything.',why:'A friendly question is still a demand: decode the speech, find words, make a face. Under load that can be the thing that tips someone over. Staff trained in autism awareness learn to offer help without insisting on an answer.',effect:'Someone spoke to you and expected a reply. Load climbed until you answered.'},
-  meltdown:{ic:'🌋',sense:'touch',s:null,name:'Acute sensory dysregulation',live:'',why:'When sensory load exceeds what the nervous system can regulate, the response can be externalised: crying, shouting, hitting out, running. It is often read as bad behaviour. It is not a choice and cannot be stopped at will. The fix is upstream: fewer demands, quieter spaces.',effect:'The screen shook, the sound roared and the task was gone.'},
+  meltdown:{ic:'🌋',sense:'touch',s:null,name:'Acute sensory dysregulation',live:'',why:'When sensory load exceeds what the nervous system can regulate, the response can be externalised: crying, shouting, hitting out, running. Often read as bad behaviour, it is not a choice and cannot be stopped at will. The fix is upstream: fewer demands, quieter spaces.',effect:'The screen shook, the sound roared and the task was gone.'},
   ear:{ic:'🎧',sense:'good',s:null,name:'Ear defenders',live:'',why:'Ear defenders and noise-cancelling headphones are one of the simplest, cheapest supports for sound hypersensitivity. Many autistic people wear them in shops. They are not rude and they are not a toy.',effect:'Sound dropped to about a third while you wore them.'},
   disengage:{ic:'🫥',sense:'move',s:null,name:'Disengaged',live:'',why:'When a hypo-responsive system gets nothing to work with, attention does not just wander, it switches off. The person is still there but the task is gone.',effect:'Your meter hit the far left. You stopped shopping and stood watching the fan.'},
 };
@@ -789,12 +789,12 @@ const CHALLENGES={
   'Checkout':{key:'Checkout',id:'tills',hard:true,title:'The checkout',sense:'sound',desc:'Beeps, a crying child, chatter, the alarm test, and someone asking if you need help.',dur:10,rate:20,stim:['till','crowd','cry','staff','alarm'],fx:'tills'},
 };
 function startChallenge(ch){if(!S.running||S.ch)return;const hyper=S.profile[ch.sense]==='hyper';const seek=!hyper&&(S.profile.vestib==='hypo'||S.profile.proprio==='hypo');
-  S.ch={...ch,t:0,bar:clamp(Math.max(S.R,0)*.5+28,0,45),taps:0,hyper,seek,rate:ch.rate*(ch.key===S.impossible?2.6:ch.hard?.95:.78)*(hyper?1:.65)*(S.reduced?.8:1),perTap:(hyper?5.0:6.0)*(ch.key===S.impossible?.45:1),impossible:ch.key===S.impossible,action:actionFor(ch.sense,seek),surgeT:rnd(1.2,2.2),missed:0};
+  S.ch={...ch,t:0,bar:clamp(Math.max(S.R,0)*.5+28,0,45),taps:0,hyper,seek,rate:ch.rate*(ch.key===S.impossible?2.6:ch.hard?.6:.68)*(hyper?1:.65)*(S.reduced?.8:1),perTap:(hyper?5.0:6.0)*(ch.key===S.impossible?.45:1),impossible:ch.key===S.impossible,action:actionFor(ch.sense,seek),surgeT:rnd(1.2,2.2),missed:0};
   S.hit.add('challenge');ch.stim.forEach(k=>{if(k==='bump'){SFX.bump();impulse('bump',6,'touch',{shake:14});}else if(k==='alarm'){setTimeout(()=>{if(S.ch&&S.ch.id===ch.id){SFX.alarmS();S.alarmT=2.5;setActive('alarm',true);}},3200);}else if(k==='tannoy'){SFX.tannoy(3);setActive('tannoy',true);S.captionT=3;$('#caption').textContent='…ATTENTION… AISLE… …OFFER… …';S.listScramble=3;}else if(k==='staff'){setTimeout(()=>{if(S.ch){SFX.voice();$('#caption').textContent='"Hiya, do you need any help?"';S.captionT=3;}},2500);}else setActive(k,true);S.hit.add(k);});
   const el=$('#chal');el.classList.add('on');el.classList.toggle('under',seek);$('#chalT').textContent=ch.title;$('#chalD').textContent=(seek?ch.desc+' You feel yourself drifting away from the task.':ch.desc)+(ch.hard?' Last one.':'');
   $('#cact').innerHTML=`Tap <b>SPACE</b> fast to ${S.ch.action}`;$('#cstate').textContent=seek?'Stay with it':'Hold it together';
   coach('ch'+ch.id,'Sensory challenge','Tap <kbd>Space</kbd> as fast as you can. Keep the bar out of the red until the challenge passes.','pink');}
-function tickChallenge(dt){const c=S.ch;if(!c)return;c.t+=dt;c.bar=clamp(c.bar+c.rate*dt*(1+c.t/c.dur*1.1),0,100);c.surgeT-=dt;if(c.surgeT<=0){c.surgeT=rnd(1.6,2.6);c.bar=clamp(c.bar+(c.hyper?11:8),0,100);S.impulses.push({t:0,shake:S.reduced?4:18,flash:S.reduced?0:.3});SFX.bump();$('#cstate').textContent='Surge';}
+function tickChallenge(dt){const c=S.ch;if(!c)return;c.t+=dt;c.bar=clamp(c.bar+c.rate*dt*(1+c.t/c.dur*1.1),0,100);c.surgeT-=dt;if(c.surgeT<=0){c.surgeT=rnd(1.6,2.6);c.bar=clamp(c.bar+(c.hyper?7:5),0,100);S.impulses.push({t:0,shake:S.reduced?4:18,flash:S.reduced?0:.3});SFX.bump();$('#cstate').textContent='Surge';}
   $('#chalT').style.filter=`blur(${(c.bar/100*2.2).toFixed(1)}px)`;$('#chalD').style.filter=`blur(${(c.bar/100*1.6).toFixed(1)}px)`;$('#chalD').style.opacity=1-c.bar/100*.5;$('#cfill').style.width=clamp(c.bar+(Math.random()-.5)*c.bar*.08,0,100)+'%';$('#chal').style.transform=`translate(calc(-50% + ${(Math.random()-.5)*c.bar*.22+Math.sin(S.t*1.3)*c.bar*.25}px),calc(-50% + ${(Math.random()-.5)*c.bar*.14}px)) rotate(${(Math.sin(S.t*1.1)*c.bar*.03).toFixed(2)}deg)`;$('#cleft').textContent=Math.max(0,Math.ceil(c.dur-c.t))+' s';if($('#cstate').textContent!=='Surge'||Math.random()<.1)$('#cstate').textContent=c.bar>80?'Nearly in crisis':c.bar>50?'Slipping':(c.seek?'Stay with it':'Hold it together');
   if(c.bar>=100){endChallenge(false);return;}if(c.t>=c.dur){endChallenge(true);}}
 function endChallenge(won){const c=S.ch;S.ch=null;tutDone(4);$('#hud').style.filter='';$('#hud').style.transform='';$('#chal').classList.remove('on');c.stim.forEach(k=>{if(k!=='bump'&&k!=='alarm'&&k!=='tannoy'&&k!=='staff')setActive(k,false);});setActive('alarm',false);setActive('tannoy',false);S.alarmT=0;
