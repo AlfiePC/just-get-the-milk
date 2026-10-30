@@ -20,3 +20,10 @@ Everything below was NOT verifiable from Claude's test environment. Automated ch
 ## Needs a real phone
 1. Is the big Cope button easy to hit fast with a thumb?
 2. Does the touch joystick and drag-to-look feel usable?
+
+## Found by six cold AI playtests, needs a human to judge
+These came from a fresh AI agent playing with no context. Each round was fixed; what is left can only be judged by a person.
+1. **Pace on your hardware.** In the test browser the game ran at 1/10 speed. On a normal laptop, does it feel smooth, and do the 8–10 second challenges feel fair at real speed?
+2. **Tapping feel.** Taps now count on slow machines and every tap shows "Pushing it back". Does steady tapping feel like it is working? Does losing the one unwinnable challenge feel like the point being made, not like your fault?
+3. **The scrambled shopping list and garbled tannoy text** are deliberate (delayed processing, speech you can't decode). The AI testers thought something had broken until the end screen explained it. Do people get it, or does it need a hint?
+4. **"Walk up to the bouncing item"** on the start screen next to "Press T and you are walked there" read as a contradiction to two testers. Watch whether people hesitate there.
