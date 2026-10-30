@@ -264,7 +264,7 @@ h2.sec{font-size:26px;color:#fff}
     <div class="keys" style="grid-template-columns:repeat(3,1fr)">
       <div><b>Walk</b><span class="kk"><kbd>L stick</kbd></span>Push the left thumbstick to walk, the right to turn. Or press <kbd>B</kbd> and you are walked to the next item.</div>
       <div><b>Pick up</b><span class="kk"><kbd>Trigger</kbd></span>Walk up to the bouncing item, look at it and pull the trigger.</div>
-      <div><b>Cope</b><span class="kk"><kbd>A</kbd><kbd>X</kbd></span>When the shop gets too much, tap A or X as fast as you can. One challenge each game cannot be won, whatever you do.</div>
+      <div><b>Cope</b><span class="kk"><kbd>A</kbd><kbd>X</kbd></span>When the shop gets too much, or too little, tap A or X as fast as you can. One challenge each game cannot be won, whatever you do.</div>
     </div>
     <div class="warn">
       <div><strong>Loud, layered sound and pulsing light. Meant to be uncomfortable.</strong> Headphones on, volume low to start. Not for anyone with photosensitive epilepsy, motion sickness or their own sensory sensitivities. Someone should be with you. Taking the headset off stops everything.</div>
@@ -298,11 +298,11 @@ h2.sec{font-size:26px;color:#fff}
       <span id="k_move" hidden></span>
       <span id="k_look" hidden></span><span id="k_esc" style="opacity:.6"><kbd>Esc</kbd><i class="lbl">stop</i></span>
     </div>
-    <div id="chal"><div class="box"><div class="eyebrow">Sensory challenge</div><div class="t" id="chalT">The lights</div><div class="d" id="chalD"></div><div id="clbl" style="display:flex;justify-content:space-between;font-size:12px;font-weight:700;color:var(--muted);margin-top:12px"><span>Calm</span><span>Your overload: keep it out of the red</span><span style="color:#ff6fb5">Crisis</span></div><div id="cbar" style="margin-top:4px"><div id="cfill"></div></div><div id="cmeta"><span id="cleft">8 s</span><span id="cstate">Hold it together</span></div><div id="ckey"><div class="a" id="cact">Tap <b>SPACE</b> fast to rock</div><div class="k" id="ckeyBtn">SPACE</div></div></div></div>
+    <div id="chal"><div class="box"><div class="eyebrow">Sensory challenge</div><div class="t" id="chalT">The lights</div><div class="d" id="chalD"></div><div id="clbl" style="display:flex;justify-content:space-between;font-size:12px;font-weight:700;color:var(--muted);margin-top:12px"><span>Coping</span><span>How much the shop is getting to you: keep it out of the red</span><span style="color:#ff6fb5">Crisis</span></div><div id="cbar" style="margin-top:4px"><div id="cfill"></div></div><div id="cmeta"><span id="cleft">8 s</span><span id="cstate">Hold it together</span></div><div id="ckey"><div class="a" id="cact">Tap <b>SPACE</b> fast to rock</div><div class="k" id="ckeyBtn">SPACE</div></div></div></div>
     <div id="crisisMsg"><div><h2 id="crH">Freeze.</h2><p id="crP"></p></div></div>
     <button id="regBtn" type="button">Tap to regulate<small>SPACE</small></button>
     <div id="edge"></div>
-    <div id="alert"><div class="box"><div class="t"><span id="alertT">Overload rising</span> <span class="n" id="alertN">62</span></div><div class="d" id="alertD"></div><div class="c" id="alertC"></div></div></div>
+    <div id="alert"><div class="box"><div class="t"><span id="alertT">Overload rising</span> <span class="n" id="alertN" hidden>62</span></div><div class="d" id="alertD"></div><div class="c" id="alertC"></div></div></div>
     <button id="capBtn" type="button">🖱 Capture mouse</button>
     <div id="earChip">🎧 Ear defenders on</div>
     <div id="clickHint"><b>Drag the mouse to look around.</b> Walk to the bouncing item and press Enter.</div>
@@ -325,7 +325,7 @@ h2.sec{font-size:26px;color:#fff}
       <canvas id="map" width="150" height="150"></canvas>
     </div>
     <div class="hudCol">
-      <div class="hudTitle"><span>How you are coping</span><span id="loadNum">0</span></div>
+      <div class="hudTitle"><span>How you are coping</span><span id="loadNum" hidden>0</span></div>
       <div id="meterBar"><div id="meterFill"></div></div>
       <div id="meterLbl"><span>too little</span><span>OK</span><span>too much</span></div>
       <div id="stateLine"></div>
@@ -776,7 +776,7 @@ function lookGain(){const u=clamp(-S.R/100,0,1);return (S.profile.proprio==='hyp
 let aimCache=null,aimFrame=0;
 
 /* nearest goal item in front of you, within reach */
-function aimed(){let best=null;for(const t of TARGETS){const m=targets[t.id];if(m.userData.done)continue;const h=m.userData.home;const dx=h.x-player.x,dz=h.z-player.z;const d=Math.hypot(dx,dz);if(d>2.4)continue;const rel=((Math.atan2(dx,dz)-(player.yaw+Math.PI))%(Math.PI*2)+Math.PI*3)%(Math.PI*2)-Math.PI;if(Math.abs(rel)>1.1)continue;if(!best||d<best.d)best={item:t.id,target:true,obj:m,d};}return best;}
+function aimed(){let best=null;for(const t of TARGETS){const m=targets[t.id];if(m.userData.done)continue;const h=m.userData.home;const dx=h.x-player.x,dz=h.z-player.z;const d=Math.hypot(dx,dz);if(d>3.2)continue;const rel=((Math.atan2(dx,dz)-(player.yaw+Math.PI))%(Math.PI*2)+Math.PI*3)%(Math.PI*2)-Math.PI;if(Math.abs(rel)>1.7)continue;if(!best||d<best.d)best={item:t.id,target:true,obj:m,d};}return best;}
 function use(){if(!S.running||S.shut||S.dis||S.melt||S.ch||S.crisisT>0)return;const a=aimed();if(!a)return;collect(a.obj);}
 function collect(m){if(m.userData.done)return;m.userData.done=true;m.userData.flyT=0;S.found++;SFX.good();const li=$('#li_'+m.userData.item.replace(/\s/g,'_'));if(li)li.classList.add('done');const mk=markers[m.userData.item];if(mk)mk.visible=false;tutDone(3);
   const ch=CHALLENGES[m.userData.item];if(ch)S.pendingCh={ch,t:.7};}
@@ -813,7 +813,7 @@ function tickChallenge(dt){const c=S.ch;if(!c)return;c.t+=dt;if(S.tapBank>0&&S.t
   $('#chalT').style.filter=`blur(${(c.bar/100*2.2).toFixed(1)}px)`;$('#chalD').style.filter=`blur(${(c.bar/100*1.6).toFixed(1)}px)`;$('#chalD').style.opacity=1-c.bar/100*.5;$('#cfill').style.width=clamp(c.bar+(Math.random()-.5)*c.bar*.08,0,100)+'%';$('#chal').style.transform=`translate(calc(-50% + ${(Math.random()-.5)*c.bar*.22+Math.sin(S.t*1.3)*c.bar*.25}px),calc(-50% + ${(Math.random()-.5)*c.bar*.14}px)) rotate(${(Math.sin(S.t*1.1)*c.bar*.03).toFixed(2)}deg)`;$('#cleft').textContent=Math.max(0,Math.ceil(c.dur-c.t))+' s';if(c.hitT>0){c.hitT-=dt;$('#cbar').classList.add('hit');}else $('#cbar').classList.remove('hit');if(c.hitT>0)$('#cstate').textContent='✔ Pushing it back';else if($('#cstate').textContent!=='Surge'||Math.random()<.1)$('#cstate').textContent=c.bar>80?'Nearly in crisis':c.bar>50?'Slipping':(c.seek?'Stay with it':'Hold it together');
   if(c.bar>=100){endChallenge(false);return;}if(c.t>=c.dur){endChallenge(true);}}
 function endChallenge(won){const c=S.ch;S.ch=null;$('#game').classList.remove('chal-on');tutDone(4);$('#hud').style.filter='';$('#hud').style.transform='';if(won){$('#chalT').textContent='Done. You held it together.';$('#chalT').style.filter='';$('#chalD').textContent='Nobody else in the shop saw the effort that took.';$('#chalD').style.filter='';$('#chalD').style.opacity=1;$('#cact').textContent='Nothing to press.';$('#ckeyBtn').style.visibility='hidden';$('#cstate').textContent='';$('#cfill').style.width='0%';$('#chal').style.transform='translate(-50%,-50%)';$('#game').classList.add('chal-on');S.chDone=1.5;}else $('#chal').classList.remove('on');c.stim.forEach(k=>{if(k!=='bump'&&k!=='alarm'&&k!=='tannoy'&&k!=='staff')setActive(k,false);});setActive('alarm',false);setActive('tannoy',false);S.alarmT=0;
-  if(won){S.R=clamp((c.seek?-1:1)*c.bar*.45,-100,100);SFX.good();coach('won'+c.id,'You held it together','It cost '+c.taps+' taps in '+Math.round(c.dur)+' seconds'+(c.missed?', and '+c.missed+' of them never registered':'')+'. For an autistic person that effort is invisible to everyone else in the shop.','blue');if(c.id==='tills')S.after={t:S.t+.6,fn:()=>end('done')};}
+  if(won){S.R=clamp((c.seek?-1:1)*c.bar*.45,-100,100);SFX.good();if(c.id==='tills')S.after={t:S.t+.6,fn:()=>end('done')};}
   else crisis(c);}
 function crisis(c){$('#coach').innerHTML='';S.crises++;S.lastImpossible=!!c.impossible;if(c.impossible)S.impLost=true;S.hit.add('cascade');const kind=S.crises===1?'freeze':S.crises===2?'meltdown':'shutdown';S.hit.add(kind);S.crisisT=kind==='freeze'?4:5;S.R=92;
   const h=$('#crH'),pp=$('#crP');const imp=c.impossible?' That one could not be won, however fast you tapped. Sometimes nothing a person does is enough, and the environment has to change instead.':'';if(kind==='freeze'){h.textContent='Freeze.';pp.textContent='You know what you want to do. Your body will not do it. Wait it out.'+imp;SFX.bump();lp.frequency.setTargetAtTime(1400,AC.currentTime,.2);setTimeout(()=>{if(AC&&!S.shut)lp.frequency.setTargetAtTime(20000,AC.currentTime,.5);},4000);}
