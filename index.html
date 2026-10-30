@@ -245,30 +245,26 @@ h2.sec{font-size:26px;color:#fff}
 <!-- ============ START ============ -->
 <section id="start" class="screen on">
   <div class="wrap">
-    <div class="eyebrow">A 90-second walk-through from Prior's Court</div>
+    <div class="eyebrow">A two-minute experience from Prior's Court</div>
     <h1>Just Get the Milk</h1>
-    <p class="lead">Walk into a supermarket, find three things on a list and pay. Easy. Except the shop was not built for the person you are about to be.</p>
-    <div class="frame">
-      <div><b>We do not know how any one autistic young person experiences the world.</b> Some find sound painful, others barely register it and go looking for more. Some crave movement and pressure. Most are a mix, and it changes day to day.</div>
-      <div>So this does not show you "what autism is like". It deals you one sensory profile out of thousands and asks you to do an ordinary task in an environment not designed with that profile in mind. Play twice and you will get a different person.</div>
-    </div>
-    <div class="keys">
-      <div><b>Walk and turn</b><span class="kk"><kbd>↑</kbd><kbd>←</kbd><kbd>→</kbd></span>Up walks, left and right turn. Or press <kbd>T</kbd> and you will be walked to the next item. (W A S D and the mouse work too.)</div>
-      <div><b>Pick up</b><span class="kk"><kbd>Enter</kbd></span>Walk up to the bouncing item and press Enter (or tap it). Only the three items on your list can be picked up.</div>
-      <div><b>Regulate</b><span class="kk"><kbd>Space</kbd></span>Every item sets off a sensory challenge. Tap Space as fast as you can to do whatever your body needs; the screen tells you what that is. Some taps will not register, and one of the three item challenges each game cannot be won at all. Lose, and you go into crisis.</div>
-      <div><b>Stop at any time</b><span class="kk"><kbd>Esc</kbd></span>Everything stops instantly. Four controls, that is all. A guide on screen walks you through the first minute.</div>
+    <p class="lead">Find three things in a supermarket and pay. Easy. Except you are shopping as an autistic young person, and the shop was not built for you.</p>
+    <div class="keys" style="grid-template-columns:repeat(3,1fr)">
+      <div><b>Walk</b><span class="kk"><kbd>T</kbd></span>Press T and you are walked to the next item. (Or use the arrow keys.)</div>
+      <div><b>Pick up</b><span class="kk"><kbd>Enter</kbd></span>Walk up to the bouncing item and press Enter.</div>
+      <div><b>Cope</b><span class="kk"><kbd>Space</kbd></span>When the shop gets too much, tap Space as fast as you can. The screen tells you what you are doing.</div>
     </div>
     <div class="warn">
-      <div><strong>Please read before you start.</strong> This uses loud, layered sound, bright pulsing light, blur, fog and camera movement. It is meant to be uncomfortable.</div>
-      <div>No strobe faster than 2 flashes per second. If you have photosensitive epilepsy, migraine, motion sickness or your own sensory sensitivities, use "Reduced effects" or sit this one out.</div>
+      <div><strong>Loud, layered sound and pulsing light. Meant to be uncomfortable.</strong> Headphones on, volume low to start. Not for anyone with photosensitive epilepsy or their own sensory sensitivities. <kbd>Esc</kbd> stops everything.</div>
     </div>
-    <div class="controls">
-      <div class="ctl"><label for="vol">Volume (start around a third)</label><input id="vol" type="range" min="0" max="100" value="35"></div>
+    <button class="big" id="startBtn">Start</button>
+    <details style="font-size:14px;color:var(--muted)"><summary style="cursor:pointer;color:var(--text)">Settings and the research behind this</summary>
+    <div class="controls" style="margin-top:12px">
+      <div class="ctl"><label for="vol">Volume</label><input id="vol" type="range" min="0" max="100" value="35"></div>
       <div class="ctl"><label><input id="reduced" type="checkbox"> Reduced effects</label><span style="color:var(--muted);font-size:12px">No pulsing light, gentler sound, no camera shake</span></div>
-      <div class="ctl"><label for="gfx">Graphics quality</label><select id="gfx" style="padding:8px;border-radius:6px;background:#0f141b;color:#fff;border:1px solid #3a4756"><option value="2" selected>Medium (recommended)</option><option value="3">High (reflections + occlusion)</option><option value="1">Low (older laptops)</option><option value="0">Lowest (phones)</option></select><span style="color:var(--muted);font-size:12px">Drops automatically if it stutters</span></div>
+      <div class="ctl"><label for="gfx">Graphics</label><select id="gfx" style="padding:8px;border-radius:6px;background:#0f141b;color:#fff;border:1px solid #3a4756"><option value="2" selected>Medium (recommended)</option><option value="3">High</option><option value="1">Low (older laptops)</option><option value="0">Lowest (phones)</option></select></div>
     </div>
-    <button class="big" id="startBtn">Headphones on. Start.</button>
-    <p class="src">Built on first-hand accounts and research, including the University of Reading supermarket study (2022), reviews of hyperacusis and auditory filtering in autism, sensory integration literature on hypo-responsivity and seeking, and Olga Bogdashina's work on perception. Sources are listed at the end.</p>
+    <p class="src" style="margin-top:12px">We do not know how any one autistic young person experiences the world. Some find sound painful, others barely notice it and go looking for more. So each game deals you a different sensory profile. Built on first-hand accounts and research including the University of Reading supermarket study (2022) and reviews of hyperacusis and sensory processing in autism. Sources are listed at the end.</p>
+    </details>
   </div>
 </section>
 
@@ -278,18 +274,17 @@ h2.sec{font-size:26px;color:#fff}
     <canvas id="c3d"></canvas>
     <div id="cross"></div><div id="prompt"></div><div id="caption"></div>
     <div id="tut"><div class="n">1</div><div class="h">Look around</div><div class="d">Move your mouse</div></div>
-    <div id="obj"><span class="arrow">➤</span><span id="objText">Find: Bread</span><small id="objDist"></small><button id="autoBtn" type="button">Take me there</button></div>
+    <div id="obj"><span class="arrow">➤</span><span id="objText">Find: Bread</span><small id="objDist"></small><button id="autoBtn" type="button">Walk me there (T)</button></div>
     <div id="coach"></div>
     <div id="profile"></div>
     <div id="basket">🧺 Basket 0/4</div>
     <button id="stopBtn" type="button">■ Stop (Esc)</button>
     <div id="ctrls">
-      <span id="k_move"><kbd>↑</kbd><kbd>←</kbd><kbd>→</kbd><i class="lbl">walk · turn</i></span>
-      <span id="k_auto"><kbd>T</kbd><i class="lbl">take me there</i></span>
-      <span id="k_look"><kbd>🖱 drag</kbd><i class="lbl">look</i></span>
+      <span id="k_auto"><kbd>T</kbd><i class="lbl">walk me there</i></span>
       <span id="k_use"><kbd>Enter</kbd><i class="lbl">pick up</i></span>
-      <span id="k_rock"><kbd>Space</kbd><i class="lbl">tap fast to regulate</i></span>
-      <span id="k_esc"><kbd>Esc</kbd><i class="lbl">stop</i></span>
+      <span id="k_rock"><kbd>Space</kbd><i class="lbl">tap fast to cope</i></span>
+      <span id="k_move" style="opacity:.6"><kbd>↑</kbd><kbd>←</kbd><kbd>→</kbd><i class="lbl">or walk yourself</i></span>
+      <span id="k_look" hidden></span><span id="k_esc" style="opacity:.6"><kbd>Esc</kbd><i class="lbl">stop</i></span>
     </div>
     <div id="chal"><div class="box"><div class="eyebrow">Sensory challenge</div><div class="t" id="chalT">The lights</div><div class="d" id="chalD"></div><div id="cbar"><div id="cfill"></div></div><div id="cmeta"><span id="cleft">8 s</span><span id="cstate">Hold it together</span></div><div id="ckey"><div class="a" id="cact">Tap <b>SPACE</b> fast to rock</div><div class="k" id="ckeyBtn">SPACE</div></div></div></div>
     <div id="crisisMsg"><div><h2 id="crH">Freeze.</h2><p id="crP"></p></div></div>
@@ -334,24 +329,22 @@ h2.sec{font-size:26px;color:#fff}
 <section id="end" class="screen">
   <div class="wrap">
     <div class="eyebrow" id="endEyebrow">Time's up</div>
-    <h1 id="endTitle">You got 2 of 4 items.</h1>
+    <h1 id="endTitle">You got 2 of 3 items.</h1>
+    <p class="lead" id="endTake" style="font-size:22px;color:#fff;font-family:var(--display)">The shop made a simple job impossible for the person you were.</p>
     <p class="lead" id="endLead"></p>
     <div class="stats">
-      <div class="stat"><b id="sItems">2/4</b><span>Items found</span></div>
-      <div class="stat"><b id="sPeak">88</b><span>Peak overload</span></div>
-      <div class="stat"><b id="sLow">-40</b><span>Lowest under-stim</span></div>
-      <div class="stat"><b id="sTime">90s</b><span>In the shop</span></div>
+      <div class="stat"><b id="sItems">2/3</b><span>Items found</span></div>
       <div class="stat"><b id="sStimT">2</b><span>Crises</span></div>
       <div class="stat"><b id="sStim">9</b><span>Things that hit you</span></div>
     </div>
     <h2 class="sec">The person you were this time</h2>
-    <p class="lead" style="font-size:15px;color:var(--muted)">Six senses, each turned up or down. Play again and you get a different mix. A real young person's profile is more complex than this and can shift with tiredness, illness or anxiety.</p>
+    <p class="lead" style="font-size:15px;color:var(--muted)">Six senses, each turned up or down. Play again and you get a different mix. Real young people are more complex than this, and it shifts with tiredness, illness or anxiety.</p>
     <div class="prof" id="profCard"></div>
-    <h2 class="sec">What happened to you, and why</h2>
+    <h2 class="sec">What hit you, and why</h2>
     <div class="why" id="why"></div>
     <div class="pc">
       <h2 class="sec">The task was never the hard part.</h2>
-      <p class="lead">Four items on a list. What made it hard was an environment built for a sensory profile that is not everyone's. Autistic young people with complex needs live with this every day, and overload is cumulative, so one more small noise after a hard morning can tip into shutdown. At Prior's Court we design environments and routines around how each young person experiences the world, not the other way round.</p>
+      <p class="lead">Three items on a list. What made it hard was a place built for a sensory profile that is not everyone's. Autistic young people with complex needs live with this every day, and overload adds up, so one more small noise after a hard morning can tip into crisis. At Prior's Court we design the environment around each young person, not the other way round.</p>
       <div class="sig"><i class="a">This is Me.</i> <i class="b">This is Us.</i> <i class="c">This is Our Future.</i></div>
       <div class="row">
         <a class="big" href="https://www.priorscourt.org.uk" target="_blank" rel="noopener">Find out about Prior's Court</a>
@@ -423,14 +416,14 @@ const STIM={
   cascade:{ic:'📈',sense:'see',s:null,name:'Cumulative load',live:'',why:'Overload is cumulative. One negative sensory event may cause only irritability. Several together heighten sensitivity, so each new one lands harder. That is why a small noise can be the final straw.',effect:'Your load decayed slowly, more slowly the more was going on, and each new stimulus added more than the last.'},
   tunnel:{ic:'🔦',sense:'see',s:null,name:'Tunnelling, fragmentation, delay',live:'',why:'Bogdashina describes mono-processing (one channel at a time), fragmented perception (parts, not wholes) and delayed processing as typical responses to overload.',effect:'Your field of view closed in, the shop broke into strips and your actions took up to a second to register.'},
   shutdown:{ic:'⛔',sense:'see',s:null,name:'Sensory shutdown',live:'',why:'The internalised response to overload: the nervous system withdraws to conserve itself. Speech, movement and processing drop away. It is the quiet twin of acute dysregulation, and because it is quiet it is often missed entirely.',effect:'Everything went grey and muffled and you could not move.'},
-  challenge:{ic:'⚡',sense:'good',s:null,name:'Sensory challenges',live:'',why:'Each item set off a burst of the thing that aisle does worst, and you fought it by tapping a key. That key stood in for what autistic people actually do: rock, hum, cover their ears, shield their eyes, squeeze, spin. In the real shop those are visible, and strangers react.',effect:'Five bursts of load that had to be actively fought, each one harder than the last.'},
+  challenge:{ic:'⚡',sense:'good',s:null,name:'Sensory challenges',live:'',why:'Each item set off a burst of what that aisle does worst, and you fought it by tapping a key. The key stood in for what autistic people really do: rock, hum, cover their ears, spin. In a real shop that is visible.',effect:'Five bursts of load that had to be actively fought, each one harder than the last.'},
   freeze:{ic:'🧊',sense:'move',s:null,name:'Freeze response',live:'Your body will not move.',why:'Part of the fight, flight or freeze response. Under high load many autistic people describe knowing exactly what they want to do and being unable to make their body do it. From outside it looks like ignoring you.',effect:'You stood still for four seconds while the shop carried on.'},
   flight:{ic:'🏃',sense:'move',s:null,name:'Flight urge',live:'Everything in you says get out.',why:'Fight, flight or freeze. With sensory overload the exit becomes the only thing that matters, and the shopping list evaporates. Autistic shoppers in the Reading study described exactly this: the fear of not being able to get out.',effect:'The exit pulled at you and your controls stopped obeying.'},
   stimloop:{ic:'🔁',sense:'move',s:null,name:'Involuntary stimming',live:'Your body takes over.',why:'When a seeking nervous system gets desperate, movement stops being a choice. Spinning, rocking or flapping happens whether or not people are watching. It genuinely helps, and it is the point at which strangers start to stare.',effect:'You spun on the spot without deciding to. It brought the meter back, and cost you time.'},
   alarm:{ic:'🚨',sense:'hear',s:'sound',name:'Fire alarm test',live:'Deafening. No warning.',why:'Sudden alarms are consistently named as the single worst trigger. There is no way to prepare and no way to escape the sound.',effect:'A hard spike and a white flash every time it sounded.'},
   smash:{ic:'🍾',sense:'hear',s:'sound',name:'Bottle smashing',live:'Sudden, sharp, behind you.',why:'A sudden sharp sound behind you is a startle reflex for everyone. With hyperacusis it lands as pain and the load it adds does not fade.',effect:'The view jolted and your load jumped.'},
   staff:{ic:'🧑‍💼',sense:'hear',s:'sound',name:'Staff member: "Can I help?"',live:'A social demand on top of everything.',why:'A friendly question is still a demand: decode the speech, find words, make a face. Under load that can be the thing that tips someone over. Staff trained in autism awareness learn to offer help without insisting on an answer.',effect:'Someone spoke to you and expected a reply. Load climbed until you answered.'},
-  meltdown:{ic:'🌋',sense:'touch',s:null,name:'Acute sensory dysregulation',live:'',why:'When sensory load exceeds what the nervous system can regulate, the response can be externalised: crying, shouting, hitting out, running. It is often read as bad behaviour. It is not a choice and the person cannot simply stop. Afterwards they are exhausted and often ashamed. The fix is upstream: fewer demands, quieter spaces, people who do not judge.',effect:'The screen shook, the sound roared and the task was gone.'},
+  meltdown:{ic:'🌋',sense:'touch',s:null,name:'Acute sensory dysregulation',live:'',why:'When sensory load exceeds what the nervous system can regulate, the response can be externalised: crying, shouting, hitting out, running. It is often read as bad behaviour. It is not a choice and cannot be stopped at will. The fix is upstream: fewer demands, quieter spaces, no judgement.',effect:'The screen shook, the sound roared and the task was gone.'},
   ear:{ic:'🎧',sense:'good',s:null,name:'Ear defenders',live:'',why:'Ear defenders and noise-cancelling headphones are one of the simplest, cheapest supports for sound hypersensitivity. Many autistic people wear them in shops. They are not rude and they are not a toy.',effect:'Sound dropped to about a third while you wore them.'},
   disengage:{ic:'🫥',sense:'move',s:null,name:'Disengaged',live:'',why:'When a hypo-responsive system gets nothing to work with, attention does not just wander, it switches off. The person is still there but the task is gone.',effect:'Your meter hit the far left. You stopped shopping and stood watching the fan.'},
 };
@@ -507,7 +500,7 @@ const SFX={
    STATE
    ===================================================================== */
 const S={running:false,t:0,R:0,peak:0,low:0,found:0,stimT:0,hit:new Set(),active:new Set(),impulses:[],reduced:false,shut:false,dis:false,ended:false,captionT:0,listScramble:0,beepT:0,rock:false,press:false,spinT:0,useT:0,useWhat:null,profile:{},lagMax:0,tannoyNext:16,bumpCool:0,lastAct:0,held:null,walkT:0,stepT:0,lookAcc:0,walkAcc:0,tut:0,tutT:0,timerOn:false,coached:new Set(),wrong:0,next:null,ear:false,melt:false,hbT:0,keepProfile:false,checkout:false,alertKind:'',freezeT:0,flightT:0,loopT:0,crisisCool:0,events:[],staff:null,staffT:0,alarmT:0,flightEnd:false,ch:null,crises:0,crisisT:0,tapT:0,taps:0,tapFx:0,blink:0,yawKick:0,bobKick:0,fovKick:0};
-let raf=0,last=0,countdownTimer=0; const TOTAL=90;
+let raf=0,last=0,countdownTimer=0; const TOTAL=105;
 function gainFor(sense){let g=S.profile[sense]==='hyper'?1:.22;if(sense==='sound'&&S.ear)g*=.35;return g;}
 function levelMult(sense){const n=[...S.active].filter(k=>STIM[k]&&STIM[k].sense==='hear').length;const filterFail=clamp((n-1)/3,0,1);const over=clamp(S.R/100,0,1);let m=(1+filterFail*1.0+over*.9)*(S.reduced?.6:1);if(sense==='sound'&&S.profile.sound==='hypo')m*=.55;if(S.ch)m*=1+S.ch.bar/100*.8;return m;}
 function setActive(k,on){if(on){if(S.active.has(k))return;S.active.add(k);S.hit.add(k);feedAdd(k);}else{if(!S.active.has(k))return;S.active.delete(k);feedRemove(k);}}
@@ -772,11 +765,11 @@ let aimCache=null,aimFrame=0;
 function aimed(){let best=null;for(const t of TARGETS){const m=targets[t.id];if(m.userData.done)continue;const h=m.userData.home;const dx=h.x-player.x,dz=h.z-player.z;const d=Math.hypot(dx,dz);if(d>2.4)continue;const rel=((Math.atan2(dx,dz)-(player.yaw+Math.PI))%(Math.PI*2)+Math.PI*3)%(Math.PI*2)-Math.PI;if(Math.abs(rel)>1.1)continue;if(!best||d<best.d)best={item:t.id,target:true,obj:m,d};}return best;}
 function use(){if(!S.running||S.shut||S.dis||S.melt||S.ch||S.crisisT>0)return;const a=aimed();if(!a)return;collect(a.obj);}
 function collect(m){if(m.userData.done)return;m.userData.done=true;m.userData.flyT=0;S.found++;SFX.good();const li=$('#li_'+m.userData.item.replace(/\s/g,'_'));if(li)li.classList.add('done');const mk=markers[m.userData.item];if(mk)mk.visible=false;tutDone(3);
-  const ch=CHALLENGES[m.userData.item];if(ch)setTimeout(()=>startChallenge(ch),700);}
+  const ch=CHALLENGES[m.userData.item];if(ch)S.pendingCh={ch,t:.7};}
 /* ---- auto-walk: take me to the next item ---- */
 function autoDest(){const nextT=TARGETS.find(t=>!targets[t.id].userData.done);if(nextT){const h=targets[nextT.id].userData.home;return {x:h.x+Math.sin(h.ry)*1.7,z:h.z+Math.cos(h.ry)*1.7,face:{x:h.x,z:h.z},name:nextT.id};}if(S.checkout)return {x:-5,z:8.4,face:{x:-5,z:11},name:'checkout 2'};return null;}
-function autoWalk(){if(!S.running)return;if(S.auto){S.auto=null;$('#autoBtn').classList.remove('on');$('#autoBtn').textContent='Take me there';return;}const d=autoDest();if(!d)return;const a=nearestNode(player.x,player.z),b=nearestNode(d.x,d.z);const path=a===b?[]:navPath(a,b);S.auto={pts:[...path.map(i=>NAV.nodes[i]),{x:d.x,z:d.z}],face:d.face,name:d.name};$('#autoBtn').classList.add('on');$('#autoBtn').textContent='Walking… (any key stops)';S.hit.add('auto');}
-function autoTick(dt){const a=S.auto;if(!a)return {fx:0,fz:0};const busy=S.shut||S.dis||S.melt||S.crisisT>0||!!S.ch;if(busy)return {fx:0,fz:0};const w=a.pts[0];if(!w){player.tyaw=Math.atan2(-(a.face.x-player.x),-(a.face.z-player.z));S.auto=null;$('#autoBtn').classList.remove('on');$('#autoBtn').textContent='Take me there';return {fx:0,fz:0};}
+function autoWalk(){if(!S.running)return;if(S.auto){S.auto=null;$('#autoBtn').classList.remove('on');$('#autoBtn').textContent='Walk me there (T)';return;}const d=autoDest();if(!d)return;const a=nearestNode(player.x,player.z),b=nearestNode(d.x,d.z);const path=a===b?[]:navPath(a,b);S.auto={pts:[...path.map(i=>NAV.nodes[i]),{x:d.x,z:d.z}],face:d.face,name:d.name};$('#autoBtn').classList.add('on');$('#autoBtn').textContent='Walking… (any key stops)';S.hit.add('auto');}
+function autoTick(dt){const a=S.auto;if(!a)return {fx:0,fz:0};const busy=S.shut||S.dis||S.melt||S.crisisT>0||!!S.ch;if(busy)return {fx:0,fz:0};const w=a.pts[0];if(!w){player.tyaw=Math.atan2(-(a.face.x-player.x),-(a.face.z-player.z));S.auto=null;$('#autoBtn').classList.remove('on');$('#autoBtn').textContent='Walk me there (T)';return {fx:0,fz:0};}
   const dx=w.x-player.x,dz=w.z-player.z,d=Math.hypot(dx,dz);if(d<(a.pts.length===1?.6:.5)){a.pts.shift();return {fx:0,fz:0};}const want=Math.atan2(-dx,-dz);let diff=((want-player.tyaw+Math.PI*3)%(Math.PI*2))-Math.PI;player.tyaw+=diff*Math.min(1,dt*6);player.tpitch+=(0-player.tpitch)*Math.min(1,dt*4);return {fx:0,fz:Math.abs(diff)<1.0?1:.3};}
 /* ---- regulation key: one key for everything ---- */
 function tap(){if(!S.running)return;S.tapT=.12;$('#regBtn').classList.add('tap');$('#ckeyBtn').classList.add('tap');setTimeout(()=>{$('#regBtn').classList.remove('tap');$('#ckeyBtn').classList.remove('tap');},90);
@@ -796,24 +789,24 @@ const CHALLENGES={
   'Checkout':{key:'Checkout',id:'tills',hard:true,title:'The checkout',sense:'sound',desc:'Beeps, a crying child, chatter, the alarm test, and someone asking if you need help.',dur:10,rate:20,stim:['till','crowd','cry','staff','alarm'],fx:'tills'},
 };
 function startChallenge(ch){if(!S.running||S.ch)return;const hyper=S.profile[ch.sense]==='hyper';const seek=!hyper&&(S.profile.vestib==='hypo'||S.profile.proprio==='hypo');
-  S.ch={...ch,t:0,bar:clamp(Math.max(S.R,0)*.5+28,0,70),taps:0,hyper,seek,rate:ch.rate*(ch.key===S.impossible?2.6:ch.hard?1.2:1.0)*(hyper?1:.65)*(S.reduced?.8:1),perTap:(hyper?5.0:6.0)*(ch.key===S.impossible?.45:1),impossible:ch.key===S.impossible,action:actionFor(ch.sense,seek),surgeT:rnd(1.2,2.2),missed:0};
+  S.ch={...ch,t:0,bar:clamp(Math.max(S.R,0)*.5+28,0,45),taps:0,hyper,seek,rate:ch.rate*(ch.key===S.impossible?2.6:ch.hard?.95:.78)*(hyper?1:.65)*(S.reduced?.8:1),perTap:(hyper?5.0:6.0)*(ch.key===S.impossible?.45:1),impossible:ch.key===S.impossible,action:actionFor(ch.sense,seek),surgeT:rnd(1.2,2.2),missed:0};
   S.hit.add('challenge');ch.stim.forEach(k=>{if(k==='bump'){SFX.bump();impulse('bump',6,'touch',{shake:14});}else if(k==='alarm'){setTimeout(()=>{if(S.ch&&S.ch.id===ch.id){SFX.alarmS();S.alarmT=2.5;setActive('alarm',true);}},3200);}else if(k==='tannoy'){SFX.tannoy(3);setActive('tannoy',true);S.captionT=3;$('#caption').textContent='…ATTENTION… AISLE… …OFFER… …';S.listScramble=3;}else if(k==='staff'){setTimeout(()=>{if(S.ch){SFX.voice();$('#caption').textContent='"Hiya, do you need any help?"';S.captionT=3;}},2500);}else setActive(k,true);S.hit.add(k);});
-  const el=$('#chal');el.classList.add('on');el.classList.toggle('under',seek);$('#chalT').textContent=ch.title;$('#chalD').textContent=(seek?ch.desc+' You feel yourself drifting away from the task.':ch.desc)+(ch.hard?' This is the hardest one.':'');
+  const el=$('#chal');el.classList.add('on');el.classList.toggle('under',seek);$('#chalT').textContent=ch.title;$('#chalD').textContent=(seek?ch.desc+' You feel yourself drifting away from the task.':ch.desc)+(ch.hard?' Last one.':'');
   $('#cact').innerHTML=`Tap <b>SPACE</b> fast to ${S.ch.action}`;$('#cstate').textContent=seek?'Stay with it':'Hold it together';
   coach('ch'+ch.id,'Sensory challenge','Tap <kbd>Space</kbd> as fast as you can. Keep the bar out of the red until the challenge passes.','pink');}
 function tickChallenge(dt){const c=S.ch;if(!c)return;c.t+=dt;c.bar=clamp(c.bar+c.rate*dt*(1+c.t/c.dur*1.1),0,100);c.surgeT-=dt;if(c.surgeT<=0){c.surgeT=rnd(1.6,2.6);c.bar=clamp(c.bar+(c.hyper?11:8),0,100);S.impulses.push({t:0,shake:S.reduced?4:18,flash:S.reduced?0:.3});SFX.bump();$('#cstate').textContent='Surge';}
   $('#chalT').style.filter=`blur(${(c.bar/100*2.2).toFixed(1)}px)`;$('#chalD').style.filter=`blur(${(c.bar/100*1.6).toFixed(1)}px)`;$('#chalD').style.opacity=1-c.bar/100*.5;$('#cfill').style.width=clamp(c.bar+(Math.random()-.5)*c.bar*.08,0,100)+'%';$('#chal').style.transform=`translate(calc(-50% + ${(Math.random()-.5)*c.bar*.22+Math.sin(S.t*1.3)*c.bar*.25}px),calc(-50% + ${(Math.random()-.5)*c.bar*.14}px)) rotate(${(Math.sin(S.t*1.1)*c.bar*.03).toFixed(2)}deg)`;$('#cleft').textContent=Math.max(0,Math.ceil(c.dur-c.t))+' s';if($('#cstate').textContent!=='Surge'||Math.random()<.1)$('#cstate').textContent=c.bar>80?'Nearly in crisis':c.bar>50?'Slipping':(c.seek?'Stay with it':'Hold it together');
   if(c.bar>=100){endChallenge(false);return;}if(c.t>=c.dur){endChallenge(true);}}
 function endChallenge(won){const c=S.ch;S.ch=null;tutDone(4);$('#hud').style.filter='';$('#hud').style.transform='';$('#chal').classList.remove('on');c.stim.forEach(k=>{if(k!=='bump'&&k!=='alarm'&&k!=='tannoy'&&k!=='staff')setActive(k,false);});setActive('alarm',false);setActive('tannoy',false);S.alarmT=0;
-  if(won){S.R=clamp((c.seek?-1:1)*c.bar*.45,-100,100);SFX.good();coach('won'+c.id,'You held it together','It cost '+c.taps+' taps in '+Math.round(c.dur)+' seconds'+(c.missed?', and '+c.missed+' of them never registered':'')+'. For an autistic person that effort is invisible to everyone else in the shop.','blue');if(c.id==='tills')setTimeout(()=>end('done'),600);}
+  if(won){S.R=clamp((c.seek?-1:1)*c.bar*.45,-100,100);SFX.good();coach('won'+c.id,'You held it together','It cost '+c.taps+' taps in '+Math.round(c.dur)+' seconds'+(c.missed?', and '+c.missed+' of them never registered':'')+'. For an autistic person that effort is invisible to everyone else in the shop.','blue');if(c.id==='tills')S.after={t:S.t+.6,fn:()=>end('done')};}
   else crisis(c);}
 function crisis(c){S.crises++;S.lastImpossible=!!c.impossible;S.hit.add('cascade');const kind=S.crises===1?'freeze':S.crises===2?'meltdown':'shutdown';S.hit.add(kind);S.crisisT=kind==='freeze'?4:5;S.R=92;
   const h=$('#crH'),pp=$('#crP');const imp=c.impossible?' That one could not be won, however fast you tapped. Sometimes nothing a person does is enough, and the environment has to change instead.':'';if(kind==='freeze'){h.textContent='Freeze.';pp.textContent='You know what you want to do. Your body will not do it. Wait it out.'+imp;SFX.bump();lp.frequency.setTargetAtTime(1400,AC.currentTime,.2);setTimeout(()=>{if(AC&&!S.shut)lp.frequency.setTargetAtTime(20000,AC.currentTime,.5);},4000);}
   else if(kind==='meltdown'){h.textContent='Acute dysregulation.';pp.textContent='Everything at once. The nervous system can no longer hold the load and discharges it outwardly. Not a choice, not bad behaviour, and it happens in public.'+imp;SFX.roar();S.impulses.push({t:0,shake:40,flash:.8});S.melt=true;}
   else{h.textContent='Sensory shutdown.';pp.textContent='The nervous system withdraws. Nothing is going in now. The shop carries on. You do not.'+imp;S.shut=true;lp.frequency.setTargetAtTime(380,AC.currentTime,.4);}
   $('#crisisMsg').style.display='grid';$('#crisisMsg').classList.toggle('under',!!c.seek);
-  if(kind==='shutdown'){setTimeout(()=>end('shutdown'),4500);return;}
-  setTimeout(()=>{$('#crisisMsg').style.display='none';S.crisisT=0;S.melt=false;S.R=70;coach('after'+kind,'Still here','You came through it. The load has not gone anywhere, so tap Space between challenges to bring it down. '+(c.id==='tills'?'':'The next item is on the map.'),'blue');if(c.id==='tills')setTimeout(()=>end('time'),300);},kind==='freeze'?4000:5200);}
+  if(kind==='shutdown'){S.after={t:S.t+4.5,fn:()=>end('shutdown')};return;}
+  S.after={t:S.t+(kind==='freeze'?4:5.2),fn:()=>{$('#crisisMsg').style.display='none';S.crisisT=0;S.melt=false;S.R=55;coach('after'+kind,'Still here','You came through it. The load has not gone anywhere, so tap Space between challenges to bring it down. '+(c.id==='tills'?'':'The next item is on the map.'),'blue');if(c.id==='tills')S.after={t:S.t+.3,fn:()=>end('unpaid')};}};}
 
 /* =====================================================================
    TUTORIAL
@@ -825,16 +818,16 @@ const TUT=isTouch?[
   {h:'Pick up the bread',d:'Walk up to the bouncing loaf and tap the screen'},
   {h:'Beat the challenge',d:'Tap the big button as fast as you can until the bar stops. Then find the other three.'},
 ]:[
-  {h:'Look around',d:'Hold the left mouse button and drag, or press the arrow keys',k:[]},
-  {h:'Walk forward',d:'Hold the up arrow to walk, left and right to turn. Or press T to be taken to the bread.',k:['↑','←','→']},
-  {h:'Find the Bakery',d:'Follow the green beam. The bar below shows direction and distance, or press T.',k:[]},
+  {h:'Press T',d:'You will be walked to the first item. (Or hold the up arrow to walk yourself.)',k:['T']},
+  {h:'On your way',d:'Follow the green beam. Left and right arrows turn you if you want to look around.',k:[]},
+  {h:'Nearly there',d:'The bread is the bouncing loaf under the beam.',k:[]},
   {h:'Pick up the bread',d:'Walk up to the bouncing loaf and press Enter',k:['Enter']},
-  {h:'Beat the challenge',d:'Tap Space as fast as you can until the bar stops. Then find the other three.',k:['Space']},
+  {h:'Cope',d:'Tap Space as fast as you can until the bar stops. Then press T for the next item.',k:['Space']},
 ];
 function tutShow(i){S.tut=i;S.tutT=0;const el=$('#tut');if(i>=TUT.length){el.classList.add('hide');$('#obj').classList.add('top');return;}const t=TUT[i];el.classList.remove('hide','done');el.querySelector('.n').textContent=i+1;el.querySelector('.h').innerHTML=t.h+(t.k&&t.k.length?' '+t.k.map(k=>`<kbd>${k}</kbd>`).join(''):'');el.querySelector('.d').textContent=t.d;}
 function tutDone(i){if(i===4&&S.tut===3.5)S.tut=4;if(S.tut!==i)return;const el=$('#tut');el.classList.add('done');el.querySelector('.n').textContent='✓';S.tut=i+.5;S.tutT=0;}
 function tutTick(dt){S.tutT+=dt;const i=Math.floor(S.tut);if(S.tut!==i){if(S.tutT>.9)tutShow(i+1);return;}if(S.auto&&i<=2){if(i===0)S.lookAcc=9;if(i===1)S.walkAcc=9;}
-  if(i===0&&S.lookAcc>.9)tutDone(0);
+  if(i===0&&(S.lookAcc>.9||S.auto))tutDone(0);
   if(i===1){if(S.walkAcc>2.5)tutDone(1);}
   if(i>=1&&!S.timerOn&&(S.tut>1||S.tutT>12)){S.timerOn=true;}
   if(i===2&&Math.hypot(player.x-(-9.5),player.z-1.5)<3.2)tutDone(2);
@@ -847,7 +840,7 @@ function start(){
   ensureAudio();if(AC.state==='suspended')AC.resume();master.gain.value=$('#vol').value/100*.9;
   lowGfx=+$('#gfx').value<=1; if(!renderer)buildWorld(); else setQuality(+$('#gfx').value);
   Object.assign(S,{running:true,t:0,R:0,peak:0,low:0,found:0,stimT:0,impulses:[],shut:false,dis:false,ended:false,captionT:0,listScramble:0,beepT:0,rock:false,press:false,spinT:0,useT:0,useWhat:null,lagMax:0,tannoyNext:16,bumpCool:0,lastAct:0,held:null,walkT:0,stepT:0,lookAcc:0,walkAcc:0,tut:0,tutT:0,timerOn:false,wrong:0,next:null});
-  S.reduced=$('#reduced').checked;S.profile=S.keepProfile&&S.profile.sound?S.profile:dealProfile();S.keepProfile=false;S.ear=false;S.melt=false;S.checkout=false;S.hbT=0;S.freezeT=0;S.flightT=0;S.loopT=0;S.crisisCool=0;S.staffT=0;S.alarmT=0;S.flightEnd=false;S.events=[];S.ch=null;S.crises=0;S.crisisT=0;S.taps=0;S.chTills=false;S.impossible=pick(['Bread','Bananas','Milk']);S.auto=null;$('#chal').classList.remove('on');$('#crisisMsg').style.display='none';if(world.staff){world.staff.m.visible=false;}$('#alert').classList.remove('on');$('#edge').style.opacity=0;S.active.clear();S.hit.clear();S.coached.clear();$('#feed').innerHTML='';$('#coach').innerHTML='';$('#stateMsg').style.display='none';$('#basket').textContent='🧺 Basket 0/4';$('#obj').classList.remove('top');
+  S.reduced=$('#reduced').checked;S.profile=S.keepProfile&&S.profile.sound?S.profile:dealProfile();S.keepProfile=false;S.ear=false;S.melt=false;S.checkout=false;S.hbT=0;S.freezeT=0;S.flightT=0;S.loopT=0;S.crisisCool=0;S.staffT=0;S.alarmT=0;S.flightEnd=false;S.events=[];S.ch=null;S.crises=0;S.crisisT=0;S.taps=0;S.chTills=false;S.pendingCh=null;S.after=null;S.impossible=pick(['Bread','Bananas','Milk']);S.auto=null;$('#chal').classList.remove('on');$('#crisisMsg').style.display='none';if(world.staff){world.staff.m.visible=false;}$('#alert').classList.remove('on');$('#edge').style.opacity=0;S.active.clear();S.hit.clear();S.coached.clear();$('#feed').innerHTML='';$('#coach').innerHTML='';$('#stateMsg').style.display='none';$('#basket').textContent='🧺 Basket 0/4';$('#obj').classList.remove('top');
   Object.assign(player,{x:0,z:-15.3,yaw:Math.PI,pitch:0,tyaw:Math.PI,tpitch:0,vx:0,vz:0});S.chimed=false;
   Object.values(targets).forEach(m=>{m.userData.done=false;m.visible=true;const h=m.userData.home;m.position.set(h.x,h.y,h.z);m.rotation.set(0,h.ry,0);});Object.values(markers).forEach(m=>m.visible=true);markers.Checkout.visible=false;
   $('#profile').innerHTML=Object.entries(S.profile).map(([k,v])=>`<span class="chip ${v}">${SENSES[k].ic} ${SENSES[k].name.split(' (')[0].split(' &')[0]} <small>${v==='hyper'?'↑ too much':'↓ needs more'}</small></span>`).join('');
@@ -874,13 +867,15 @@ function tick(){
   if(!S.chimed&&player.z>-14.5){S.chimed=true;SFX.chime();}
   {const chI2=S.ch?S.ch.bar/100:0;const crI2=S.crisisT>0?1:0;if((over>.5||chI2>.25||crI2)&&!S.shut){S.hbT-=dt;if(S.hbT<=0){S.hbT=60/(70+over*80+chI2*90+crI2*80);SFX.heart();}}}
   // ---- challenge, alarm flashes, crisis hold ----
+  if(S.pendingCh){S.pendingCh.t-=dt;if(S.pendingCh.t<=0){const c=S.pendingCh.ch;S.pendingCh=null;startChallenge(c);}}
+  if(S.after&&S.t>=S.after.t){const f=S.after.fn;S.after=null;f();if(!S.running)return;}
   tickChallenge(dt);if(S.crisisT>0)S.crisisT-=dt;
   if(S.alarmT>0){S.alarmT-=dt;const ph=Math.floor(S.t*2)%2;if(ph!==S.alarmPh){S.alarmPh=ph;if(ph)impulse('alarm',2.5,'sound',{shake:S.reduced?0:5,flash:S.reduced?0:.22});}if(S.alarmT<=0)setActive('alarm',false);}
   if(S.melt&&S.crisisT>0&&Math.random()<.4)S.impulses.push({t:0,shake:S.reduced?6:28,flash:Math.random()*.3});
   // ---- movement ----
   let fx=0,fz=0;if(keys.KeyW||keys.ArrowUp)fz+=1;if(keys.KeyS||keys.ArrowDown)fz-=1;if(keys.KeyA)fx-=1;if(keys.KeyD)fx+=1;if(S.auto&&(fx||fz||joy.active||drag.on))autoWalk();const au=autoTick(dt);fx+=au.fx;fz+=au.fz;const lg=lookGain()*dt*1.9;if(keys.ArrowLeft){player.tyaw+=lg;S.lookAcc+=lg;}if(keys.ArrowRight){player.tyaw-=lg;S.lookAcc+=lg;}if(joy.active){fx+=joy.dx;fz-=joy.dy;}
   const busy=S.shut||S.dis||S.melt||S.crisisT>0||!!S.ch;
-  const spd=busy?0:3.2*(1-over*.35)*(1-under*.3*((P.proprio==='hypo')?1:.3));
+  const spd=busy?0:(S.auto?4.0:3.2)*(1-over*.35)*(1-under*.3*((P.proprio==='hypo')?1:.3));
   const sin=Math.sin(player.yaw),cos=Math.cos(player.yaw);
   let vx=(fx*cos-fz*sin)*spd,vz=(-fz*cos-fx*sin)*spd;
   if(P.proprio==='hypo'&&under>.2&&!S.reduced){vx+=Math.sin(S.t*1.3)*under*1.1;vz+=Math.cos(S.t*.9)*under*1.1;}
@@ -921,7 +916,7 @@ function tick(){
   // ---- tutorial & timer ----
   tutTick(dt);
   if(S.found===NEED&&!S.checkout){S.checkout=true;markers.Checkout.visible=true;coach('pay','All three. Now pay.','Follow the marker to checkout 2. It is the loudest place in the shop, and the last challenge.','blue');}
-  if(S.checkout&&!S.ended&&!S.ch&&!S.chTills&&Math.hypot(player.x-(-5),player.z-8.4)<1.6){S.chTills=true;S.auto=null;$('#autoBtn').classList.remove('on');$('#autoBtn').textContent='Take me there';startChallenge(CHALLENGES.Checkout);}
+  if(S.checkout&&!S.ended&&!S.ch&&!S.chTills&&Math.hypot(player.x-(-5),player.z-8.4)<1.6){S.chTills=true;S.auto=null;$('#autoBtn').classList.remove('on');$('#autoBtn').textContent='Walk me there (T)';startChallenge(CHALLENGES.Checkout);}
   if(S.timerOn){if(S.t>=TOTAL+(S.tStart||0))return end('time');}else S.tStart=S.t;
   $('#timer').textContent=Math.max(0,Math.ceil(TOTAL-(S.t-(S.tStart||0))));
   render(dt);raf=requestAnimationFrame(tick);
@@ -1021,10 +1016,11 @@ function scramble(s){return s.split('').map(c=>Math.random()<.4?'abcdefghilmnors
    ===================================================================== */
 function end(reason){
   if(S.ended)return;S.ended=true;stopAll(false);
-  const eb={flight:`Left the shop, ${Math.round(S.t)} seconds in`,shutdown:`Sensory shutdown, ${Math.round(S.t)} seconds in`,meltdown:`Acute dysregulation, ${Math.round(S.t)} seconds in`,disengage:`Disengaged, ${Math.round(S.t)} seconds in`,done:`Paid and out in ${Math.round(S.t)} seconds`,time:"Time's up"}[reason];$('#endTitle').classList.toggle('crisis',['shutdown','meltdown','disengage','flight'].includes(reason));
+  const eb={unpaid:`Left without paying, ${Math.round(S.t)} seconds in`,flight:`Left the shop, ${Math.round(S.t)} seconds in`,shutdown:`Sensory shutdown, ${Math.round(S.t)} seconds in`,meltdown:`Acute dysregulation, ${Math.round(S.t)} seconds in`,disengage:`Disengaged, ${Math.round(S.t)} seconds in`,done:`Paid and out in ${Math.round(S.t)} seconds`,time:"Time's up"}[reason];$('#endTitle').classList.toggle('crisis',['shutdown','meltdown','disengage','flight','unpaid'].includes(reason));
   $('#endEyebrow').textContent=eb;$('#endTitle').textContent=`You got ${S.found} of ${NEED} items.`;
-  $('#endLead').textContent={flight:'You did not finish. You got out, which is what every cell in your body was asking for. The list and the plan stopped existing the moment the exit did. Many autistic adults simply stop going to shops for this reason.',meltdown:'You did not finish. The environment kept adding load until your nervous system could no longer regulate it. In a real shop this is the moment other people stare. It is not a failure of the person. It is a failure of the place, and of the people who could have made it easier.',shutdown:'You did not finish. The load reached the point where your nervous system withdrew and stopped taking anything in. Autistic shoppers in the Reading study described exactly this: once inside, there is no way out.',disengage:'You did not finish. The shop gave your body none of the input it needed, and the task quietly disappeared. This is the side of sensory difference that gets missed, because it looks like "not paying attention".',done:'You finished, and paid, in the loudest corner of the shop. Now look at what it cost: every challenge you beat was invisible effort nobody else in the shop could see. In a real shop there is no key to tap, only the rocking or the hands over the ears, and the people who stare at it.',time:'A three-item list is not hard. The environment made it hard for the person you were. Even non-autistic visitors to the Reading research supermarket rushed through and missed items in the high-sensory version.'}[reason];if(S.crises)$('#endLead').textContent+=` You went into crisis ${S.crises} time${S.crises>1?'s':''}.`;$('#endLead').textContent+=` The challenge that could not be won this time was the ${S.impossible==='Checkout'?'checkout':S.impossible.toLowerCase()}.`;
-  $('#sItems').textContent=`${S.found}/${NEED}`;$('#sPeak').textContent=Math.round(Math.max(0,S.peak));$('#sLow').textContent=Math.round(Math.min(0,S.low));$('#sTime').textContent=Math.round(S.t)+'s';$('#sStimT').textContent=S.crises;$('#sStim').textContent=[...S.hit].filter(k=>STIM[k].s).length;{const cr=['freeze','meltdown','shutdown','disengage'].filter(k=>S.hit.has(k));if(cr.length)$('#endLead').textContent+=` Crises this run: ${cr.map(k=>STIM[k].name.toLowerCase()).join(', ')}.`;}
+  $('#endTake').textContent={done:'You did it. Now look at what it cost.',time:'Ninety seconds was not enough for the person you were.',unpaid:'You found everything, and still could not get out.'}[reason]||'The shop made a simple job impossible for the person you were.';
+  $('#endLead').textContent={unpaid:'The checkout was the loudest place in the shop and the last straw. You put the basket down and walked out. Many autistic adults describe doing exactly this, and then not going back.',flight:'You did not finish. You got out, which is what every cell in your body was asking for. The list and the plan stopped existing the moment the exit did. Many autistic adults simply stop going to shops for this reason.',meltdown:'You did not finish. The environment kept adding load until your nervous system could no longer regulate it. In a real shop this is the moment other people stare. It is not a failure of the person. It is a failure of the place, and of the people who could have made it easier.',shutdown:'You did not finish. The load reached the point where your nervous system withdrew and stopped taking anything in. Autistic shoppers in the Reading study described exactly this: once inside, there is no way out.',disengage:'You did not finish. The shop gave your body none of the input it needed, and the task quietly disappeared. This is the side of sensory difference that gets missed, because it looks like "not paying attention".',done:'You finished, and paid, in the loudest corner of the shop. Now look at what it cost: every challenge you beat was invisible effort nobody else in the shop could see. In a real shop there is no key to tap, only the rocking or the hands over the ears, and the people who stare at it.',time:'A three-item list is not hard. The environment made it hard for the person you were. Even non-autistic visitors to the Reading research supermarket rushed through and missed items in the high-sensory version.'}[reason];if(S.crises)$('#endLead').textContent+=` You went into crisis ${S.crises} time${S.crises>1?'s':''}.`;$('#endLead').textContent+=` The challenge that could not be won this time was the ${S.impossible==='Checkout'?'checkout':S.impossible.toLowerCase()}.`;
+  $('#sItems').textContent=`${S.found}/${NEED}`;$('#sStimT').textContent=S.crises;$('#sStim').textContent=[...S.hit].filter(k=>STIM[k]&&STIM[k].s).length;{const cr=['freeze','meltdown','shutdown','disengage'].filter(k=>S.hit.has(k));if(cr.length)$('#endLead').textContent+=` Crises this run: ${cr.map(k=>STIM[k].name.toLowerCase()).join(', ')}.`;}
   $('#profCard').innerHTML=Object.entries(S.profile).map(([k,v])=>`<div class="${v}"><b>${SENSES[k].ic} ${SENSES[k].name} ${v==='hyper'?'↑':'↓'}</b><span>${SENSES[k][v]}</span></div>`).join('');
   const order=['challenge','fluorescent','clutter','music','crowd','till','fridge','cold','smell','tannoy','alarm','staff','bump','cry','fan','hunger','stimOK','cascade','tunnel','freeze','meltdown','shutdown','disengage'];
 
