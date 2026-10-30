@@ -265,8 +265,8 @@ h2.sec{font-size:26px;color:#fff}
     <button class="big" id="startBtn">Start</button>
     <div class="keys" style="grid-template-columns:repeat(3,1fr)">
       <div><b>Walk</b><span class="kk"><kbd>T</kbd></span>Press T and you are walked to the next item.</div>
-      <div><b>Pick up</b><span class="kk"><kbd>Enter</kbd></span>Walk up to the bouncing item and press Enter.</div>
-      <div><b>Cope</b><span class="kk"><kbd>Space</kbd></span>When the shop gets too much, or too little, tap Space as fast as you can. One challenge each game cannot be won, whatever you do.</div>
+      <div><b>Pick up</b><span class="kk"><kbd>Enter</kbd></span>When you reach the bouncing item, press Enter.</div>
+      <div><b>Cope</b><span class="kk"><kbd>Space</kbd></span>When the shop gets too much, or too little, tap Space as fast as you can. One challenge each game cannot be won, whatever you do. Three crises end the trip.</div>
     </div>
     <div class="warn">
       <div><strong>Loud, layered sound and pulsing light. Meant to be uncomfortable.</strong> Headphones on, volume low to start. Not for anyone with photosensitive epilepsy or their own sensory sensitivities. <kbd>Esc</kbd> stops everything.</div>
@@ -319,7 +319,7 @@ h2.sec{font-size:26px;color:#fff}
   </div>
   <div id="hud">
     <div class="hudCol">
-      <div class="hudTitle"><span>Find these</span><span><span id="timer">105</span><small style="font-size:11px;color:var(--muted);margin-left:4px">s left</small></span></div>
+      <div class="hudTitle"><span>Find these</span><span><span id="timer">105</span><small style="font-size:11px;color:var(--muted);margin-left:4px">s left</small><small id="crisisCt" style="font-size:11px;color:#ff6fb5;font-weight:800;margin-left:8px"></small></span></div>
       <ul id="list"></ul>
     </div>
     <div class="hudCol" id="mapCol">
@@ -1002,7 +1002,7 @@ function render(dt){
   {const sm=S.ch?clamp(S.ch.bar/100,0,1):0;$('#hud').style.filter=sm>0?`blur(${(sm*3).toFixed(1)}px) saturate(${(1+sm).toFixed(2)})`:'';$('#hud').style.transform=sm>0?`translate(${((Math.random()-.5)*sm*6).toFixed(1)}px,${((Math.random()-.5)*sm*4).toFixed(1)}px)`:'';}
   const list=$('#list');const fade=Math.abs(R)>45?clamp(1-(Math.abs(R)-45)/70,.15,1):1;list.style.opacity=S.listScramble>0?Math.min(fade,.35):fade;
   if(S.listScramble>0){S.listScramble-=dt;if(Math.random()<.25)list.querySelectorAll('.txt').forEach(t=>{t.textContent=scramble(t.dataset.t);});}else list.querySelectorAll('.txt').forEach(t=>{if(t.textContent!==t.dataset.t)t.textContent=t.dataset.t;});
-  $('#game').classList.toggle('crisis-on',S.crisisT>0);$('#game').classList.toggle('alert-on',(!!S.alertKind||S.okUntil>S.t)&&!S.ch&&S.crisisT<=0);{const cc=document.querySelector('#crCount');if(cc)cc.textContent=S.crisisT>0&&!S.shut?'Back in '+Math.max(1,Math.ceil(S.crisisT))+' s. Nothing to press.':'';}const shownR=S.ch?Math.round(S.ch.bar):R;const f=$('#meterFill');f.classList.toggle('neg',shownR<0);f.style.width=Math.abs(shownR)/2+'%';f.style.left=shownR<0?(50-Math.abs(shownR)/2)+'%':'50%';$('#loadNum').textContent=Math.round(shownR);
+  $('#game').classList.toggle('crisis-on',S.crisisT>0);$('#game').classList.toggle('alert-on',(!!S.alertKind||S.okUntil>S.t)&&!S.ch&&S.crisisT<=0);{const cc=document.querySelector('#crCount');if(cc)cc.textContent=S.crisisT>0&&!S.shut?'Crisis '+S.crises+' of 3.'+(S.crises===2?' One more ends the trip.':'')+' Back in '+Math.max(1,Math.ceil(S.crisisT))+' s. Nothing to press.':'';}{const ct=$('#crisisCt');if(ct)ct.textContent=S.crises?S.crises+' of 3 crises':'';}const shownR=S.ch?Math.round(S.ch.bar):R;const f=$('#meterFill');f.classList.toggle('neg',shownR<0);f.style.width=Math.abs(shownR)/2+'%';f.style.left=shownR<0?(50-Math.abs(shownR)/2)+'%':'50%';$('#loadNum').textContent=Math.round(shownR);
   // edge alerts
   const al=$('#alert');let kind='';if(!S.shut&&!S.dis&&!S.melt&&!S.ch&&S.crisisT<=0){if(R>50)kind='over';else if(R<-35)kind='under';}
   if(kind!==S.alertKind){if(!kind&&S.alertKind&&!S.ch&&S.crisisT<=0&&!S.shut){S.okUntil=S.t+1.5;$('#alertT').textContent='Back to OK';$('#alertD').textContent='You brought it back. Carry on.';$('#afill').style.width='0%';$('#astate').textContent='';S.aB=undefined;$('#alertC').textContent='';}S.alertKind=kind;al.classList.toggle('on',!!kind);al.classList.toggle('under',kind==='under');$('#edge').classList.toggle('under',kind==='under');}
