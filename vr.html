@@ -224,6 +224,7 @@ h2.sec{font-size:26px;color:#fff}
 #game{overflow:hidden}
 #game.chal-on #hud .hudCol:nth-child(3),#game.alert-on #hud .hudCol:nth-child(3){visibility:hidden}
 #game.chal-on #obj,#game.crisis-on #obj,#game.alert-on #obj{visibility:hidden}
+#game.chal-on #ctrls,#game.crisis-on #ctrls,#game.alert-on #ctrls{visibility:hidden}
 #crCount{font-family:var(--body);font-weight:800;font-size:18px;color:#fff;margin-top:10px}
 #cbar.hit{box-shadow:0 0 0 3px var(--lime),0 0 18px var(--lime)}
 #cbar{height:22px;transition:box-shadow .08s;background:#0f141b;border-radius:6px;overflow:hidden;margin:12px 0 4px;position:relative;border:1px solid rgba(255,255,255,.15)}
@@ -806,7 +807,7 @@ const CHALLENGES={
   'Checkout':{key:'Checkout',id:'tills',hard:true,title:'The checkout',sense:'sound',desc:'Beeps, a crying child, chatter, the alarm test, and someone asking if you need help.',descLow:'The checkout is busy and blurry, and someone is asking if you need help.',dur:10,rate:20,stim:['till','crowd','cry','staff','alarm'],fx:'tills'},
 };
 function startChallenge(ch){if(!S.running||S.ch)return;S.chDone=0;$('#ckeyBtn').style.visibility='';S.tapBank=0;$('#game').classList.add('chal-on');$('#coach').innerHTML='';const hyper=S.profile[ch.sense]==='hyper';const seek=!hyper&&(S.profile.vestib==='hypo'||S.profile.proprio==='hypo');
-  S.ch={...ch,t:0,bar:clamp(Math.max(S.R,0)*.5+28,0,45),taps:0,hyper,seek,rate:ch.rate*(ch.key===S.impossible?2.6:ch.hard?.6:.68)*(hyper?1:.65)*(S.reduced?.8:1),perTap:(hyper?5.0:6.0)*(ch.key===S.impossible?.45:1),impossible:ch.key===S.impossible,action:actionFor(ch.sense,seek),surgeT:rnd(1.2,2.2),missed:0};
+  S.ch={...ch,t:0,bar:clamp(Math.max(S.R,0)*.5+28,0,45),taps:0,hyper,seek,rate:ch.rate*(ch.key===S.impossible?1.1:ch.hard?.6:.68)*(hyper?1:.65)*(S.reduced?.8:1),perTap:(hyper?5.0:6.0)*(ch.key===S.impossible?.45:1),impossible:ch.key===S.impossible,action:actionFor(ch.sense,seek),surgeT:rnd(1.2,2.2),missed:0};
   S.hit.add('challenge');ch.stim.forEach(k=>{if(k==='bump'){SFX.bump();impulse('bump',6,'touch',{shake:14});}else if(k==='alarm'){setTimeout(()=>{if(S.ch&&S.ch.id===ch.id){SFX.alarmS();S.alarmT=2.5;setActive('alarm',true);}},3200);}else if(k==='tannoy'){SFX.tannoy(3);setActive('tannoy',true);S.captionT=3;$('#caption').textContent='…ATTENTION… AISLE… …OFFER… …';S.listScramble=3;}else if(k==='staff'){setTimeout(()=>{if(S.ch){SFX.voice();$('#caption').textContent='"Hiya, do you need any help?"';S.captionT=3;}},2500);}else setActive(k,true);S.hit.add(k);});
   const el=$('#chal');el.classList.add('on');el.classList.toggle('under',seek);$('#chalT').textContent=ch.title;$('#chalD').textContent=(hyper?ch.desc:(ch.descLow||ch.desc))+(ch.hard?' Last one.':'');
   $('#cact').innerHTML=`Tap <b>SPACE</b> fast to ${S.ch.action}`;$('#cstate').textContent='▲ Rising: tap faster';$('#cstate').style.color='#ff6fb5';
