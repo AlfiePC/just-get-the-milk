@@ -21,9 +21,13 @@ Everything below was NOT verifiable from Claude's test environment. Automated ch
 1. Is the big Cope button easy to hit fast with a thumb?
 2. Does the touch joystick and drag-to-look feel usable?
 
-## Found by six cold AI playtests, needs a human to judge
-These came from a fresh AI agent playing with no context. Each round was fixed; what is left can only be judged by a person.
-1. **Pace on your hardware.** In the test browser the game ran at 1/10 speed. On a normal laptop, does it feel smooth, and do the 8–10 second challenges feel fair at real speed?
-2. **Tapping feel.** Taps now count on slow machines and every tap shows "Pushing it back". Does steady tapping feel like it is working? Does losing the one unwinnable challenge feel like the point being made, not like your fault?
-3. **The scrambled shopping list and garbled tannoy text** are deliberate (delayed processing, speech you can't decode). The AI testers thought something had broken until the end screen explained it. Do people get it, or does it need a hint?
-4. **"Walk up to the bouncing item"** on the start screen next to "Press T and you are walked there" read as a contradiction to two testers. Watch whether people hesitate there.
+## Found by twelve cold AI playtests, needs a human to judge
+These came from a fresh AI agent playing with no context, one round at a time; each round's top confusion was fixed and confirmed by the next tester. What is left can only be judged by a person.
+1. **Pace on your hardware.** In the test browser the game ran at 1/8 to 1/10 speed. On a normal laptop, does it feel smooth, and do the 8 to 10 second challenges feel fair at real speed?
+2. **Tapping feel.** The bar now has a white "you are here" edge and one steady line: "Start tapping SPACE", "Under control", "Going down" or "Rising: tap faster". Does that match what people feel while tapping? Does losing the unwinnable one (it now takes 3 to 6 seconds) feel like the point being made, not like their fault?
+3. **The scrambled shopping list and garbled tannoy text** are deliberate (delayed processing, speech you can't decode). Testers thought something had broken until the end screen explained it. Do people get it, or does it need a hint?
+4. **Camera at pick-up.** Several testers were told "Press Enter to pick up" while the item was off camera, because the auto-walk arrives facing down the aisle. Watch whether real players notice.
+5. **A challenge that opens mid-walk** can be missed if you are just watching. With sound on, the challenge sound may be enough; check with sound.
+6. **End screen length.** Every tester said the message was clear ("The task was never the hard part") but that about 17 cards sit before it. Watch whether people scroll that far.
+7. **"Three crises end the trip"** is on the start screen and the count shows after the first crisis. Check people understand "crisis" before they have seen one.
+8. **Smaller points testers raised:** the shop map has no legend; the timer is not explained; "Can I help?" says "until you answered" but there is nothing to answer; a smell challenge can appear when the profile says smells barely register.
