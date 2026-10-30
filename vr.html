@@ -211,6 +211,7 @@ h2.sec{font-size:26px;color:#fff}
 #hud{grid-template-columns:1fr 150px 1.4fr}
 #obj{font-size:18px;padding:8px 10px 8px 14px;border-width:2px}
 #objText{font-weight:800}
+@media (max-width:760px){#obj{white-space:normal;flex-wrap:wrap;justify-content:center;font-size:14px;max-width:calc(100% - 24px);overflow:visible;row-gap:6px}#objText{text-align:center}}
 /* v7: challenge panel, single regulate key, simplified controls */
 #chal{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:6;display:none;width:min(600px,calc(100% - 32px));text-align:center}
 #chal.on{display:block}

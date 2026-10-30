@@ -211,6 +211,7 @@ h2.sec{font-size:26px;color:#fff}
 #hud{grid-template-columns:1fr 150px 1.4fr}
 #obj{font-size:18px;padding:8px 10px 8px 14px;border-width:2px}
 #objText{font-weight:800}
+@media (max-width:760px){#obj{white-space:normal;flex-wrap:wrap;justify-content:center;font-size:14px;max-width:calc(100% - 24px);overflow:visible;row-gap:6px}#objText{text-align:center}}
 /* v7: challenge panel, single regulate key, simplified controls */
 #chal{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:6;display:none;width:min(600px,calc(100% - 32px));text-align:center}
 #chal.on{display:block}
@@ -984,7 +985,7 @@ function render(dt){
   const nextT=TARGETS.find(t=>!targets[t.id].userData.done);
   if(!nextT){const dx=-5-player.x,dz=8.4-player.z;const d=Math.hypot(dx,dz);const rel=Math.atan2(dx,dz)-(player.yaw+Math.PI);$('#obj .arrow').style.transform=`rotate(${(-rel*180/Math.PI-90).toFixed(0)}deg)`;$('#objText').textContent=S.auto?'Walking to checkout 2':'Pay at checkout 2';$('#objDist').textContent=`🧾 ${d.toFixed(0)} m`;}
   if(nextT){const m=targets[nextT.id];const dx=m.userData.home.x-player.x,dz=m.userData.home.z-player.z;const d=Math.hypot(dx,dz);const rel=Math.atan2(dx,dz)-(player.yaw+Math.PI);$('#obj .arrow').style.transform=`rotate(${(-rel*180/Math.PI-90).toFixed(0)}deg)`;$('#objText').textContent=S.auto?`Walking to ${S.auto.name}`:`Find: ${nextT.id}`;$('#objDist').textContent=`${nextT.ic} ${TARGETS.find(t=>t.id===nextT.id).zone} · ${d.toFixed(0)} m`;document.querySelectorAll('#list li').forEach(li=>li.classList.toggle('next',li.id==='li_'+nextT.id.replace(/\s/g,'_')));}
-  {let ins;if(S.ch)ins='Tap Space as fast as you can';else if(S.crisisT>0)ins='Wait. It will pass.';else if(a)ins='Press Enter to pick up '+a.item.toLowerCase();else if(S.auto)ins='Walking you to '+(S.auto.name==='checkout 2'?'the checkout':'the '+S.auto.name.toLowerCase())+'…';else if(!nextT)ins='Press T to walk to the checkout. You pay when you get there.';else ins='Press T to walk to the '+nextT.id.toLowerCase();if($('#objText').textContent!==ins)$('#objText').textContent=ins;}
+  {let ins;if(S.ch)ins=isTouch?'Tap the big button as fast as you can':'Tap Space as fast as you can';else if(S.crisisT>0)ins='Wait. It will pass.';else if(a)ins=(isTouch?'Tap the screen to pick up ':'Press Enter to pick up ')+a.item.toLowerCase();else if(S.auto)ins='Walking you to '+(S.auto.name==='checkout 2'?'the checkout':'the '+S.auto.name.toLowerCase())+'…';else if(!nextT)ins=(isTouch?'Tap Walk':'Press T')+' to go to the checkout. You pay when you get there.';else ins=(isTouch?'Tap Walk':'Press T')+' to walk to the '+nextT.id.toLowerCase();if($('#objText').textContent!==ins)$('#objText').textContent=ins;}
   // beep scramble, captions, list fade
   if(S.beepT>0){S.beepT-=dt;if(Math.random()<.3){const ts=[...document.querySelectorAll('#list .txt')];const t=ts[Math.floor(Math.random()*ts.length)];if(t){t.textContent=scramble(t.dataset.t);setTimeout(()=>{t.textContent=t.dataset.t},260);}}}
   if(S.captionT>0){S.captionT-=dt;$('#caption').style.opacity=1;}else $('#caption').style.opacity=0;
