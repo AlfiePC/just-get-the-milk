@@ -22,6 +22,8 @@ Everything below was NOT verifiable from Claude's test environment. Automated ch
 - Does point-and-pull pick up every item first time?
 - Is the shop now uncomfortable enough, without being painful?
 
+**Second headset session (3 Nov):** turning speed confirmed fine. Fixed: the corner panel overlapped the left-hand menu, so the left-hand menu is gone and a small waypoint panel now sits at the TOP of the view (next item, arrow, distance, time left, crises); a big centre panel appears only for challenges, warnings and crises (it was never updating in VR before, which is why the crisis message and tap prompts had vanished); when you are at an item, "Pull a trigger" floats above it and the top panel says the same; either trigger picks up (pointing with either controller, looking at it, or standing within 2 m); controllers now rumble with the challenge bar and hard during a crisis. Please check: does the crisis now feel like one, and do the prompts appear?
+
 What was optimised for the Quest 3S on 3 Nov, measured in the emulator: draw calls 212 → 142 per frame, render CPU 10.3 → 6.1 ms on the laptop, the 564 ms first-frame stall removed by compiling every shader at load, physically based materials swapped for cheaper Lambert ones, all 36 product types welded into one mesh with one texture, parked and pushed trolleys welded, one cosmetic light removed, the effect overlay skipped when no effect is showing, and the headset asked for 72 Hz.
 
 1. Does pressing Start drop you straight into VR on the first press?
