@@ -673,14 +673,14 @@ function buildWorld(){
   world.ov.position.set(0,0,-1); world.ov.renderOrder=2000; camera.add(world.ov);
   // ---- controllers ----
   const cf=new XRControllerModelFactory();
-  for(let i=0;i<2;i++){const c=renderer.xr.getController(i); c.addEventListener('selectstart',()=>{if(S.ch)tap();else use();}); c.addEventListener('squeezestart',()=>{autoWalk();}); world.rig.add(c); xr.ctrl.push(c); const g=renderer.xr.getControllerGrip(i); g.add(cf.createControllerModel(g)); world.rig.add(g); xr.grip.push(g);}
+  for(let i=0;i<2;i++){const c=renderer.xr.getController(i); {const lg=new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0,0,0),new THREE.Vector3(0,0,-1)]);const ln=new THREE.Line(lg,new THREE.LineBasicMaterial({color:0xffffff,transparent:true,opacity:.55}));ln.scale.z=3;ln.name='laser';c.add(ln);} c.addEventListener('squeezestart',()=>{autoWalk();}); world.rig.add(c); xr.ctrl.push(c); const g=renderer.xr.getControllerGrip(i); g.add(cf.createControllerModel(g)); world.rig.add(g); xr.grip.push(g);}
   renderer.xr.addEventListener('sessionstart',()=>{xr.presenting=true;world.wrist.visible=true;world.head.visible=true;});
   renderer.xr.addEventListener('sessionend',()=>{xr.presenting=false;world.wrist.visible=false;world.head.visible=false;});
   // ---- world-space panels ----
   world.wristC=cvs(512,512)[0]; world.wristT=new THREE.CanvasTexture(world.wristC); world.wristT.colorSpace=THREE.SRGBColorSpace;
   world.wrist=new THREE.Mesh(new THREE.PlaneGeometry(.22,.22),new THREE.MeshBasicMaterial({map:world.wristT,transparent:true,depthTest:false})); world.wrist.position.set(0,.09,-.05); world.wrist.rotation.x=-Math.PI/2.6; world.wrist.renderOrder=1500; world.wrist.visible=false; xr.grip[0].add(world.wrist);
   world.headC=cvs(768,360)[0]; world.headT=new THREE.CanvasTexture(world.headC); world.headT.colorSpace=THREE.SRGBColorSpace;
-  world.head=new THREE.Mesh(new THREE.PlaneGeometry(1.5,.7),new THREE.MeshBasicMaterial({map:world.headT,transparent:true,depthTest:false})); world.head.position.set(0,-.22,-1.6); world.head.renderOrder=1600; world.head.visible=false; camera.add(world.head);
+  world.head=new THREE.Mesh(new THREE.PlaneGeometry(1.5,.7),new THREE.MeshBasicMaterial({map:world.headT,transparent:true,depthTest:false})); world.head.position.set(-.40,-.38,-1.15);world.head.scale.setScalar(.42);world.head.rotation.set(.3,.33,0,'YXZ'); world.head.renderOrder=1600; world.head.visible=false; camera.add(world.head);
   onResize(); window.addEventListener('resize',onResize);
 }
 function mergeStatics(){world.vcMat=world.vcMat||new THREE.MeshStandardMaterial({vertexColors:true,roughness:.6,metalness:.15});const keep=new Set([...world.fridgeDoors,...(world.doors||[]),world.spinner,world.fanHit,...(world.tillLamps||[])]);const groups=new Map();const toRemove=[];
@@ -797,7 +797,10 @@ function lookGain(){const u=clamp(-S.R/100,0,1);return (S.profile.proprio==='hyp
 let aimCache=null,aimFrame=0;
 
 /* nearest goal item in front of you, within reach */
-function aimed(){let best=null;for(const t of TARGETS){const m=targets[t.id];if(m.userData.done)continue;const h=m.userData.home;const dx=h.x-player.x,dz=h.z-player.z;const d=Math.hypot(dx,dz);if(d>3.2)continue;const rel=((Math.atan2(dx,dz)-(player.yaw+Math.PI))%(Math.PI*2)+Math.PI*3)%(Math.PI*2)-Math.PI;if(Math.abs(rel)>1.7)continue;if(!best||d<best.d)best={item:t.id,target:true,obj:m,d};}return best;}
+function headXZ(){if(renderer&&renderer.xr.isPresenting){camera.getWorldPosition(tmpV);return {x:tmpV.x,z:tmpV.z};}return player;}
+function aimed(){let best=null;const hp=headXZ();for(const t of TARGETS){const m=targets[t.id];if(m.userData.done)continue;const h=m.userData.home;const dx=h.x-hp.x,dz=h.z-hp.z;const d=Math.hypot(dx,dz);if(d>3.2)continue;const rel=((Math.atan2(dx,dz)-(player.yaw+Math.PI))%(Math.PI*2)+Math.PI*3)%(Math.PI*2)-Math.PI;if(Math.abs(rel)>1.7)continue;if(!best||d<best.d)best={item:t.id,target:true,obj:m,d};}return best;}
+const _rayM=new THREE.Matrix4(),_rayO=new THREE.Vector3(),_rayD=new THREE.Vector3(),_rayC=new THREE.Raycaster();
+function rayPick(c){c.updateMatrixWorld(true);_rayM.identity().extractRotation(c.matrixWorld);_rayO.setFromMatrixPosition(c.matrixWorld);_rayD.set(0,0,-1).applyMatrix4(_rayM).normalize();let best=null,bestA=.15;for(const t of TARGETS){const m=targets[t.id];if(!m||m.userData.done)continue;m.getWorldPosition(tmpV);tmpV.sub(_rayO);const d=tmpV.length();if(d>5||d<.05)continue;const a=tmpV.normalize().angleTo(_rayD);const tol=Math.max(.15,Math.atan(.35/d));if(a<tol&&a<(best?bestA:tol)){best=m;bestA=a;}}return best;}
 function use(){if(!S.running||S.shut||S.dis||S.melt||S.ch||S.crisisT>0)return;const a=aimed();if(!a)return;collect(a.obj);}
 function collect(m){if(m.userData.done)return;m.userData.done=true;m.userData.flyT=0;S.found++;SFX.good();const li=$('#li_'+m.userData.item.replace(/\s/g,'_'));if(li)li.classList.add('done');const mk=markers[m.userData.item];if(mk)mk.visible=false;tutDone(3);
   const ch=CHALLENGES[m.userData.item];if(ch)S.pendingCh={ch,t:.7};}
@@ -916,8 +919,8 @@ function tick(){
   let fx=0,fz=0;if(keys.KeyW||keys.ArrowUp)fz+=1;if(keys.KeyS||keys.ArrowDown)fz-=1;if(keys.KeyA)fx-=1;if(keys.KeyD)fx+=1;
   const ses=renderer.xr.getSession();if(ses){let i=0;for(const srcI of ses.inputSources){const gp=srcI.gamepad;if(!gp)continue;const ax=gp.axes;const sx2=ax.length>=4?ax[2]:ax[0]||0,sy2=ax.length>=4?ax[3]:ax[1]||0;
     if(srcI.handedness==='left'){if(Math.abs(sx2)>.18)fx+=sx2;if(Math.abs(sy2)>.18)fz-=sy2;}
-    else{if(Math.abs(sx2)>.65&&!xr.snap){xr.snap=true;world.rig.rotation.y-=Math.sign(sx2)*Math.PI/6;}else if(Math.abs(sx2)<.3)xr.snap=false;if(Math.abs(sy2)>.18)fz-=sy2;}
-    const pb=xr.prevBtn[Math.min(i,1)];gp.buttons.forEach((b,j)=>{const was=!!pb[j];if(b.pressed&&!was){if(j===4){tap();}if(j===5){autoWalk();}if(j===0&&S.ch){tap();}}pb[j]=b.pressed;});i++;}}
+    else{{const nw=performance.now();const rdt=Math.min(.05,(nw-(xr.turnT||nw))/1000);xr.turnT=nw;if(Math.abs(sx2)>.2){world.rig.rotation.y-=Math.sign(sx2)*(Math.abs(sx2)-.2)/.8*rdt*1.57;}}if(Math.abs(sy2)>.18)fz-=sy2;}
+    const pb=xr.prevBtn[Math.min(i,1)];gp.buttons.forEach((b,j)=>{const was=!!pb[j];if(b.pressed&&!was){if(j===4){tap();}if(j===5){autoWalk();}if(j===0){if(S.ch)tap();else{const cc=renderer.xr.getController(i);const hit=cc&&rayPick(cc);if(hit&&S.running&&!S.shut&&!S.dis&&!S.melt&&S.crisisT<=0)collect(hit);else use();}}}pb[j]=b.pressed;});i++;}}
   if(S.auto&&(fx||fz||joy.active||drag.on))cancelAuto();if(S.auto&&aimed())cancelAuto();const au=autoTick(dt);fx+=au.fx;fz+=au.fz;const lg=lookGain()*dt*1.9;if(keys.ArrowLeft){player.tyaw+=lg;S.lookAcc+=lg;}if(keys.ArrowRight){player.tyaw-=lg;S.lookAcc+=lg;}if(joy.active){fx+=joy.dx;fz-=joy.dy;}
   const busy=S.shut||S.dis||S.melt||S.crisisT>0||!!S.ch;
   const spd=busy?0:(S.auto?4.0:3.2)*(1-over*.35)*(1-under*.3*((P.proprio==='hypo')?1:.3));
@@ -953,7 +956,7 @@ function tick(){
   if(S.R>75&&!S.ch)coach('over2','Nearly at crisis','Get out of the noise now and tap <kbd>Space</kbd>. At 100 you go into crisis.','pink');
   if(S.R<-25&&!S.ch)coach('under','Your body is asking for input','You are under-stimulated. Tap <kbd>Space</kbd> fast to '+actionFor('vestib',true)+'.','blue');
   if(S.R<-70&&!S.ch)coach('under2','Switching off','The task is slipping away. Tap <kbd>Space</kbd> now or you will disengage completely.','blue');
-  if(S.R>=100&&!S.shut&&!S.melt&&!S.ch&&S.crisisT<=0){crisis({id:'ambient',seek:false});}
+  if(S.t<(S.calmUntil||0)&&!S.ch&&S.crisisT<=0)S.R=Math.min(S.R,48);if(S.R>=100&&!S.shut&&!S.melt&&!S.ch&&S.crisisT<=0){if(S.alertKind==='over'&&S.t-(S.alertSince||S.t)>=3)crisis({id:'ambient',seek:false});else S.R=99;}
   if(false){ if(false){S.shut=true;S.hit.add('shutdown');lp.frequency.setTargetAtTime(380,AC.currentTime,.4);$('#stateH').textContent='Shutdown.';$('#stateP').textContent='Too much, for too long. Nothing is going in now. The shop carries on. You do not.';$('#stateMsg').style.display='grid';setTimeout(()=>end('shutdown'),4200);}
     else{S.melt=true;S.hit.add('meltdown');SFX.roar();S.impulses.push({t:0,shake:40,flash:.8});if(S.held){S.held.stage='back';}$('#stateH').textContent='Meltdown.';$('#stateP').textContent='Everything at once. You have dropped the basket. This is not a tantrum and it is not a choice; it is a nervous system that has run out of road.';setTimeout(()=>{$('#stateMsg').style.display='grid';},900);setTimeout(()=>end('meltdown'),4600);} }
   if(S.melt&&!S.ended){if(Math.random()<.4)S.impulses.push({t:0,shake:S.reduced?6:30,flash:Math.random()*.3});}
@@ -970,8 +973,8 @@ function tick(){
 function render(dt){
   const P=S.profile,R=S.R,A=S.active,over=clamp(R/100,0,1),under=clamp(-R/100,0,1),Rd=S.reduced;
   const chI=S.ch?clamp(S.ch.bar/100,0,1):0;const crI=S.crisisT>0?1:0;const crKind=crI?(S.shut?'Shutdown.':S.melt?'Meltdown.':'Freeze.'):'';
-  if(AC){for(const id in src){const s=src[id];const d=dist(s.pos);const att=s.pos?1/(1+Math.pow(d/5,2)):1;let lv=s.base*att*levelMult('sound');if(id==='fluorescent'&&P.sound==='hypo')lv*=.5;if(id==='stress'){lv=.55*(chI*chI*.9+crI*(crKind==='Shutdown.'?.5:1.1))*(Rd?.45:1);}else if(id==='tinnitus'){lv=crI?.16*(crKind==='Shutdown.'?.35:1)*(Rd?.4:1):0;}else lv*=1+chI*.6+crI*(crKind==='Shutdown.'?0:1.1);s.gain.gain.setTargetAtTime(lv,AC.currentTime,.12);s.pan.pan.setTargetAtTime(panFor(s.pos),AC.currentTime,.1);}
-    const d=S.shut?0:clamp((R-45)/55,0,1)*.6;wet.gain.setTargetAtTime(d,AC.currentTime,.2);dry.gain.setTargetAtTime(1-d*.5,AC.currentTime,.2);
+  if(AC){for(const id in src){const s=src[id];const d=dist(s.pos);const att=s.pos?1/(1+Math.pow(d/(renderer.xr.isPresenting?8:5),2)):1;let lv=s.base*att*levelMult('sound')*(renderer.xr.isPresenting&&id!=='alarm'&&id!=='stress'&&id!=='tinnitus'?1.6:1);if(id==='fluorescent'&&P.sound==='hypo')lv*=.5;if(id==='stress'){lv=.55*(chI*chI*.9+crI*(crKind==='Shutdown.'?.5:1.1))*(Rd?.45:1);}else if(id==='tinnitus'){lv=crI?.16*(crKind==='Shutdown.'?.35:1)*(Rd?.4:1):0;}else lv*=1+chI*.6+crI*(crKind==='Shutdown.'?0:1.1);s.gain.gain.setTargetAtTime(lv,AC.currentTime,.12);s.pan.pan.setTargetAtTime(panFor(s.pos),AC.currentTime,.1);}
+    const d=S.shut?0:(renderer.xr.isPresenting?clamp((R-20)/60,0,1)*.8:clamp((R-45)/55,0,1)*.6);wet.gain.setTargetAtTime(d,AC.currentTime,.2);dry.gain.setTargetAtTime(1-d*.5,AC.currentTime,.2);
     if(world.dis){const D=world.dis,t=AC.currentTime,sc=Rd?.35:1;const dz=crI?(crKind==='Shutdown.'?.4:1):0;
       D.wet.gain.setTargetAtTime(dz*.75*sc,t,.15);D.dry.gain.setTargetAtTime(1-dz*.35,t,.15);D.fb.gain.setTargetAtTime(.35+dz*.4,t,.2);
       D.dLfo.frequency.setTargetAtTime(crKind==='Meltdown.'?1.3+Math.sin(S.t*.7)*.8:.45,t,.3);D.dLfoG.gain.setTargetAtTime(.004+dz*.012,t,.2);
@@ -1033,6 +1036,7 @@ function render(dt){
   if(S.tapT>0)S.tapT-=dt;$('#regBtn').style.display=S.ch?'none':'block';
   $('#stateLine').textContent=S.shut?'Sensory shutdown.':S.melt?'Acute dysregulation.':S.dis?'Disengaged.':S.crisisT>0?'Crisis. Wait it out.':S.ch?'Sensory challenge. Tap A or X.':R>80?'Overloaded. Everything hurts. Nothing is going in.':R>55?'Tunnelling. Vision narrowing, actions lagging.':R>25?'Loaded. It is not resetting.':R<-70?'Switching off. The list is slipping away.':R<-45?'Under-stimulated. Foggy, drifting, hungry for input.':R<-20?'Flat. Your body is asking for something.':'Regulated. The task is just a task.';
   if(renderer.xr.isPresenting){const Qd=world.q||(world.q={ema:1/72,fpsN:0,fpsT:0,fps:0,cool:4});Qd.ema+=(dt-Qd.ema)*.05;Qd.fpsN++;Qd.fpsT+=dt;if(Qd.fpsT>=1){Qd.fps=Math.round(Qd.fpsN/Qd.fpsT);Qd.fpsN=0;Qd.fpsT=0;}Qd.cool-=dt;if((!EMU||/[?&]adapt=1/.test(location.search))&&Qd.cool<=0&&Qd.ema>1/72*1.18&&(world.qLevel||0)<3){Qd.cool=4;questLevel((world.qLevel||0)+1);}if(PERF&&S.frame%36===0)drawWrist();}
+  if(renderer.xr.isPresenting&&S.frame%3===0)xr.ctrl.forEach(c=>{const ln=c.getObjectByName('laser');if(ln){const on=!S.ch&&!!rayPick(c);ln.material.color.setHex(on?0x92d400:0xffffff);ln.material.opacity=on?1:.55;}});
   if(window.__perf){const P=window.__perf,ri=renderer.info.render;P.n++;P.calls=ri.calls;P.tris=ri.triangles;P.dt+=dt;P.max=Math.max(P.max,dt);}
   drawMap();}
   if(renderer.xr.isPresenting){if(S.frame%5===0){const k=[objTxt,objSub,Math.round(objRel*20),alertT,alertD,kind,S.ch?Math.round(S.ch.bar):-1,S.ch?Math.ceil(S.ch.dur-S.ch.t):-1,S.crisisT>0,S.tapFx>0,$('#tut').className,($('#tut').textContent||'').length,(document.querySelector('.toast')||{}).textContent,S.captionT>0?$('#caption').textContent:''].join('|');if(k!==world.headKey){world.headKey=k;drawHead({objRel,objTxt,objSub,alertT,alertD,kind});}}if(S.frame%20===0){const k2=[S.found,Math.ceil(TOTAL-(S.t-(S.tStart||0))),Math.round(S.R/2),$('#stateLine').textContent,Math.round(player.x),Math.round(player.z)].join('|');if(k2!==world.wristKey){world.wristKey=k2;drawWrist();}}}
@@ -1096,7 +1100,7 @@ function end(reason){
 }
 
 // debug/testing hook
-window.__game={S,get player(){return player},keys,get scene(){return scene},get renderer(){return renderer},get world(){return world},drawHead,drawWrist,perfStart:()=>{window.__perf={n:0,dt:0,max:0,calls:0,tris:0};},perfRead:()=>{const P=window.__perf;return P?{saved:world.questSaved,lambert:world.lambertCount,level:world.qLevel||0,ovVisible:world.ov&&world.ov.visible,programs:renderer.info.programs.length,frames:P.n,avgMs:+(P.dt/P.n*1000).toFixed(1),maxMs:+(P.max*1000).toFixed(1),calls:P.calls,tris:P.tris,merged:world.mergedStats,presenting:renderer.xr.isPresenting}:null;},productTypes,THREE,step:(n=60,dt=1/60)=>{player.tyaw=player.yaw;player.tpitch=player.pitch;for(let i=0;i<n;i++){if(!S.running)break;last=performance.now()-dt*1000;tick();}if(S.running)last=performance.now();},use,tap,startChallenge,CHALLENGES,aimed:()=>{const o=aimed();return o?{item:o.item,target:o.target,d:o.d}:null},src:()=>Object.keys(src),targets:()=>Object.fromEntries(Object.entries(targets).map(([k,m])=>[k,m.userData.home]))};
+window.__game={S,get player(){return player},keys,get scene(){return scene},get renderer(){return renderer},get world(){return world},rayPick,headXZ,drawHead,drawWrist,perfStart:()=>{window.__perf={n:0,dt:0,max:0,calls:0,tris:0};},perfRead:()=>{const P=window.__perf;return P?{saved:world.questSaved,lambert:world.lambertCount,level:world.qLevel||0,ovVisible:world.ov&&world.ov.visible,programs:renderer.info.programs.length,frames:P.n,avgMs:+(P.dt/P.n*1000).toFixed(1),maxMs:+(P.max*1000).toFixed(1),calls:P.calls,tris:P.tris,merged:world.mergedStats,presenting:renderer.xr.isPresenting}:null;},productTypes,THREE,step:(n=60,dt=1/60)=>{player.tyaw=player.yaw;player.tpitch=player.pitch;for(let i=0;i<n;i++){if(!S.running)break;last=performance.now()-dt*1000;tick();}if(S.running)last=performance.now();},use,tap,startChallenge,CHALLENGES,aimed:()=>{const o=aimed();return o?{item:o.item,target:o.target,d:o.d}:null},src:()=>Object.keys(src),targets:()=>Object.fromEntries(Object.entries(targets).map(([k,m])=>[k,m.userData.home]))};
 
 if(/[?&]mute=1/.test(location.search)){$('#vol').value=0;}
 if(!navigator.xr){const w=document.createElement('div');w.className='warn';w.innerHTML='<div><strong>No headset detected.</strong> Open this page in the browser on a Meta Quest to play in VR. It still runs here as a flat preview.</div>';$('#start .wrap').insertBefore(w,$('#startBtn'));}

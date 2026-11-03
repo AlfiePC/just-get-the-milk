@@ -16,6 +16,12 @@ Everything below was NOT verifiable from Claude's test environment. Automated ch
 - **Quality 2/3 or lower** = the game hit slow frames and switched off some shoppers or effects automatically. Note when it happened.
 - **Amber or red fps that stays there** = still too slow; tell Claude the number and what was on screen.
 
+**Headset fixes from Alfie's first real session (3 Nov):** performance was fine. Fixed: the "Find…" panel now sits small in the lower-left corner instead of dead centre; the right stick turns smoothly (about 90° a second) instead of snapping; pick-up now works by pointing: each controller has a laser that turns lime on a goal item, and pulling the trigger picks it up (it also still works by looking at the item when close); sounds are harsher and carry further in VR (alarm and crisis tones unchanged, everything under the limiter). Please check on the headset:
+- Is the corner panel readable, and out of the way?
+- Is smooth turning comfortable, or too fast or slow?
+- Does point-and-pull pick up every item first time?
+- Is the shop now uncomfortable enough, without being painful?
+
 What was optimised for the Quest 3S on 3 Nov, measured in the emulator: draw calls 212 → 142 per frame, render CPU 10.3 → 6.1 ms on the laptop, the 564 ms first-frame stall removed by compiling every shader at load, physically based materials swapped for cheaper Lambert ones, all 36 product types welded into one mesh with one texture, parked and pushed trolleys welded, one cosmetic light removed, the effect overlay skipped when no effect is showing, and the headset asked for 72 Hz.
 
 1. Does pressing Start drop you straight into VR on the first press?
