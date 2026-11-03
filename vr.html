@@ -225,6 +225,7 @@ h2.sec{font-size:26px;color:#fff}
 #game #hud .hudCol:nth-child(3){display:none}
 #game.chal-on #obj,#game.crisis-on #obj,#game.alert-on #obj{visibility:hidden}
 #game.chal-on #ctrls,#game.crisis-on #ctrls,#game.alert-on #ctrls{visibility:hidden}
+#game.pending-on #autoBtn,#game.pending-on #objDist{display:none!important}
 #crCount{font-family:var(--body);font-weight:800;font-size:18px;color:#fff;margin-top:10px}
 #cbar.hit{box-shadow:0 0 0 3px var(--lime),0 0 18px var(--lime)}
 #cbar{height:22px;transition:box-shadow .08s;background:#0f141b;border-radius:6px;overflow:hidden;margin:12px 0 4px;position:relative;border:1px solid rgba(255,255,255,.15)}
@@ -966,7 +967,7 @@ function tick(){
   tutTick(dt);
   if(S.found===NEED&&!S.checkout){S.checkout=true;markers.Checkout.visible=true;}
   if(S.checkout&&!S.ended&&!S.ch&&!S.chTills&&Math.hypot(player.x-(-5),player.z-8.4)<1.6){S.chTills=true;S.auto=null;$('#autoBtn').classList.remove('on');$('#autoBtn').textContent='Walk (T)';S.pendingCh={ch:CHALLENGES.Checkout,t:2.2};}
-  if(S.timerOn){if(S.t>=TOTAL+(S.tStart||0))return end('time');}else S.tStart=S.t;
+  if(S.timerOn&&(S.ch||S.crisisT>0||S.pendingCh))S.tStart=(S.tStart||0)+dt;if(S.timerOn){if(S.t>=TOTAL+(S.tStart||0))return end('time');}else S.tStart=S.t;
   {const left=Math.max(0,Math.ceil(TOTAL-(S.t-(S.tStart||0))));$('#timer').textContent=left;const low=S.timerOn&&left<=20;$('#timer').style.color=low?'#ff6fb5':'';$('#timer').style.fontSize=low?'22px':'';$('#timerLbl').textContent=low?'s left to pay':'s left';}
   render(dt);raf=requestAnimationFrame(tick);
 }

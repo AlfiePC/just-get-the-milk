@@ -225,6 +225,7 @@ h2.sec{font-size:26px;color:#fff}
 #game #hud .hudCol:nth-child(3){display:none}
 #game.chal-on #obj,#game.crisis-on #obj,#game.alert-on #obj{visibility:hidden}
 #game.chal-on #ctrls,#game.crisis-on #ctrls,#game.alert-on #ctrls{visibility:hidden}
+#game.pending-on #autoBtn,#game.pending-on #objDist{display:none!important}
 #crCount{font-family:var(--body);font-weight:800;font-size:18px;color:#fff;margin-top:10px}
 #cbar.hit{box-shadow:0 0 0 3px var(--lime),0 0 18px var(--lime)}
 #cbar{height:22px;transition:box-shadow .08s;background:#0f141b;border-radius:6px;overflow:hidden;margin:12px 0 4px;position:relative;border:1px solid rgba(255,255,255,.15)}
@@ -934,7 +935,7 @@ function tick(){
   tutTick(dt);
   if(S.found===NEED&&!S.checkout){S.checkout=true;markers.Checkout.visible=true;}
   if(S.checkout&&!S.ended&&!S.ch&&!S.chTills&&Math.hypot(player.x-(-5),player.z-8.4)<1.6){S.chTills=true;S.auto=null;$('#autoBtn').classList.remove('on');$('#autoBtn').textContent='Walk (T)';S.pendingCh={ch:CHALLENGES.Checkout,t:2.2};}
-  if(S.timerOn){if(S.t>=TOTAL+(S.tStart||0))return end('time');}else S.tStart=S.t;
+  if(S.timerOn&&(S.ch||S.crisisT>0||S.pendingCh))S.tStart=(S.tStart||0)+dt;if(S.timerOn){if(S.t>=TOTAL+(S.tStart||0))return end('time');}else S.tStart=S.t;
   {const left=Math.max(0,Math.ceil(TOTAL-(S.t-(S.tStart||0))));$('#timer').textContent=left;const low=S.timerOn&&left<=20;$('#timer').style.color=low?'#ff6fb5':'';$('#timer').style.fontSize=low?'22px':'';$('#timerLbl').textContent=low?'s left to pay':'s left';}
   render(dt);raf=requestAnimationFrame(tick);
 }
@@ -1003,9 +1004,9 @@ function render(dt){
   {const sm=S.ch?clamp(S.ch.bar/100,0,1):0;$('#hud').style.filter=sm>0?`blur(${(sm*3).toFixed(1)}px) saturate(${(1+sm).toFixed(2)})`:'';$('#hud').style.transform=sm>0?`translate(${((Math.random()-.5)*sm*6).toFixed(1)}px,${((Math.random()-.5)*sm*4).toFixed(1)}px)`:'';}
   const list=$('#list');const fade=Math.abs(R)>45?clamp(1-(Math.abs(R)-45)/70,.15,1):1;list.style.opacity=S.listScramble>0?Math.min(fade,.35):fade;
   if(S.listScramble>0){S.listScramble-=dt;if(Math.random()<.25)list.querySelectorAll('.txt').forEach(t=>{t.textContent=scramble(t.dataset.t);});}else list.querySelectorAll('.txt').forEach(t=>{if(t.textContent!==t.dataset.t)t.textContent=t.dataset.t;});
-  $('#game').classList.toggle('crisis-on',S.crisisT>0);$('#game').classList.toggle('alert-on',!!S.alertKind&&!S.ch&&S.crisisT<=0);{const cc=document.querySelector('#crCount');if(cc)cc.textContent=S.crisisT>0&&!S.shut?'Crisis '+S.crises+' of 3.'+(S.crises===2?' One more ends the trip.':'')+' Back in '+Math.max(1,Math.ceil(S.crisisT))+' s. Nothing to press.':'';}{const ct=$('#crisisCt');if(ct)ct.textContent=S.crises+' of 3 crises';}const shownR=S.ch?Math.round(S.ch.bar):R;const f=$('#meterFill');f.classList.toggle('neg',shownR<0);f.style.width=Math.abs(shownR)/2+'%';f.style.left=shownR<0?(50-Math.abs(shownR)/2)+'%':'50%';$('#loadNum').textContent=Math.round(shownR);
+  $('#game').classList.toggle('crisis-on',S.crisisT>0);$('#game').classList.toggle('pending-on',!!S.pendingCh&&!S.ch&&S.crisisT<=0);$('#game').classList.toggle('alert-on',!!S.alertKind&&!S.ch&&S.crisisT<=0);{const cc=document.querySelector('#crCount');if(cc)cc.textContent=S.crisisT>0&&!S.shut?'Crisis '+S.crises+' of 3.'+(S.crises===2?' One more ends the trip.':'')+' Back in '+Math.max(1,Math.ceil(S.crisisT))+' s. Nothing to press.':'';}{const ct=$('#crisisCt');if(ct)ct.textContent=S.crises+' of 3 crises';}const shownR=S.ch?Math.round(S.ch.bar):R;const f=$('#meterFill');f.classList.toggle('neg',shownR<0);f.style.width=Math.abs(shownR)/2+'%';f.style.left=shownR<0?(50-Math.abs(shownR)/2)+'%':'50%';$('#loadNum').textContent=Math.round(shownR);
   // edge alerts
-  const al=$('#alert');let kind='';if(!S.shut&&!S.dis&&!S.melt&&!S.ch&&S.crisisT<=0&&S.t>=(S.calmUntil||0)){if(R>50)kind='over';else if(R<-35)kind='under';}
+  const al=$('#alert');let kind='';if(!S.shut&&!S.dis&&!S.melt&&!S.ch&&S.crisisT<=0&&!S.pendingCh&&S.t>=(S.calmUntil||0)){if(R>50)kind='over';else if(R<-35)kind='under';}
   if(kind!==S.alertKind){if(kind)S.alertSince=S.t;if(!kind&&S.alertKind&&!S.ch&&S.crisisT<=0&&!S.shut){S.okUntil=S.t+1.2;$('#alertT').textContent='Back to OK';$('#alertD').textContent=S.aTaps?'You brought it back. Carry on.':'It eased off this time. Carry on.';S.aTaps=0;S.calmUntil=S.t+3;$('#afill').style.width='0%';$('#astate').textContent='';S.aB=undefined;$('#alertC').textContent='';}S.alertKind=kind;al.classList.toggle('on',!!kind);al.classList.toggle('under',kind==='under');$('#edge').classList.toggle('under',kind==='under');}
   if(!kind&&S.okUntil){if(S.okUntil>S.t&&!S.ch&&S.crisisT<=0)al.classList.add('on');else{S.okUntil=0;al.classList.remove('on');}}
   if(kind){$('#alertN').textContent=Math.round(R);{const mag=Math.abs(R);if(S.aT===undefined||S.t-S.aT>=.5||S.t<S.aT){S.aTr=S.aB===undefined?1:mag-S.aB;S.aB=mag;S.aT=S.t;}$('#afill').style.width=Math.min(100,mag)+'%';const up=S.aTr>-1;$('#astate').textContent=up?'▲ Getting worse: tap Space fast':(S.aTaps?'▼ Coming back: keep tapping':'▼ Easing off for now');$('#astate').style.color=up?'#ff6fb5':'#92d400';}
