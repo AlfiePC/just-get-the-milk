@@ -11,6 +11,17 @@ Everything below was NOT verifiable from Claude's test environment. Automated ch
 6. Does anyone find the experience too distressing? Watch for it and stop if so.
 
 ## Needs the Meta Quest 3S headset
+### Checklist for the next headset session (only the real headset can confirm these)
+Open alfiepc.github.io/just-get-the-milk/p (VR with the frame-rate readout). Tick each one:
+1. **Both triggers pick up every item.** Bread, bananas and milk in one run, using the left trigger for at least one and the right for at least one. (Fixed after session 3; emulator passes all three in a row.)
+2. **Taps feel responsive.** In a challenge, does each press of A, X or a trigger give a click in the hand and move the bar straight away?
+3. **Rumble is strong enough.** Stronger as a challenge bar rises, full strength in a crisis.
+4. **Hold Y to exit.** Holding Y on the left controller for about 1.5 s leaves VR and returns to the start screen; a short press does nothing.
+5. **Walking while turning never stops you.**
+6. **Nothing overlaps.** Top waypoint, centre challenge/crisis panel and the "Pull a trigger" label on your hand.
+7. **The crisis still feels like a crisis** (session 3 said yes) and the sound is uncomfortable but not painful.
+8. **Frame rate** stays green at 72 on the top panel.
+
 **Quick performance check (2 minutes):** open https://alfiepc.github.io/just-get-the-milk/vr.html?perf=1 in the Quest browser, press Start, and look at the bottom of the wrist panel (raise your left hand). It shows frames per second, the quality level and draw calls.
 - **Green 72 fps, quality 3/3** = running as designed.
 - **Quality 2/3 or lower** = the game hit slow frames and switched off some shoppers or effects automatically. Note when it happened.
