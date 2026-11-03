@@ -11,6 +11,13 @@ Everything below was NOT verifiable from Claude's test environment. Automated ch
 6. Does anyone find the experience too distressing? Watch for it and stop if so.
 
 ## Needs the Meta Quest 3S headset
+**Quick performance check (2 minutes):** open https://alfiepc.github.io/just-get-the-milk/vr.html?perf=1 in the Quest browser, press Start, and look at the bottom of the wrist panel (raise your left hand). It shows frames per second, the quality level and draw calls.
+- **Green 72 fps, quality 3/3** = running as designed.
+- **Quality 2/3 or lower** = the game hit slow frames and switched off some shoppers or effects automatically. Note when it happened.
+- **Amber or red fps that stays there** = still too slow; tell Claude the number and what was on screen.
+
+What was optimised for the Quest 3S on 3 Nov, measured in the emulator: draw calls 212 → 142 per frame, render CPU 10.3 → 6.1 ms on the laptop, the 564 ms first-frame stall removed by compiling every shader at load, physically based materials swapped for cheaper Lambert ones, all 36 product types welded into one mesh with one texture, parked and pushed trolleys welded, one cosmetic light removed, the effect overlay skipped when no effect is showing, and the headset asked for 72 Hz.
+
 1. Does pressing Start drop you straight into VR on the first press?
 2. Is it smooth (no judder) while walking? The emulator could only measure draw calls, not real frame rate.
 3. Comfort: any motion sickness from smooth walking or snap turning?

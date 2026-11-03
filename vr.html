@@ -260,9 +260,9 @@ h2.sec{font-size:26px;color:#fff}
 <!-- ============ START ============ -->
 <section id="start" class="screen on">
   <div class="wrap">
-    <div class="eyebrow">A two-minute experience from Prior's Court · Meta Quest edition</div>
+    <div class="eyebrow">A short experience from Prior's Court · Meta Quest edition</div>
     <h1>Just Get the Milk <span style="color:var(--sky)">VR</span></h1>
-    <p class="lead">Find three things in a supermarket and pay. Easy. Except you are shopping as an autistic young person, and the shop was not built for you. Each game deals you a different sensory profile.</p>
+    <p class="lead">Find three things in a supermarket and pay at the checkout, all within 105 seconds. Easy. Except you are shopping as an autistic young person, and the shop was not built for you. Each game deals you a different sensory profile.</p>
     <button class="big" id="startBtn">Start in VR</button>
     <div class="keys" style="grid-template-columns:repeat(3,1fr)">
       <div><b>Walk</b><span class="kk"><kbd>L stick</kbd></span>Push the left thumbstick to walk, the right to turn. Or press <kbd>B</kbd> and you are walked to the next item.</div>
@@ -320,7 +320,7 @@ h2.sec{font-size:26px;color:#fff}
   </div>
   <div id="hud">
     <div class="hudCol">
-      <div class="hudTitle"><span>Find these</span><span><span id="timer">105</span><small style="font-size:11px;color:var(--muted);margin-left:4px">s left</small><small id="crisisCt" style="font-size:11px;color:#ff6fb5;font-weight:800;margin-left:8px"></small></span></div>
+      <div class="hudTitle"><span>Find these</span><span><span id="timer">105</span><small id="timerLbl" style="font-size:11px;color:var(--muted);margin-left:4px">s left</small><small id="crisisCt" style="font-size:11px;color:#ff6fb5;font-weight:800;margin-left:8px"></small></span></div>
       <ul id="list"></ul>
     </div>
     <div class="hudCol" id="mapCol">
@@ -386,7 +386,7 @@ h2.sec{font-size:26px;color:#fff}
 
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
 <script type="module">
-const EMU=/[?&]emu=1/.test(location.search);
+const EMU=/[?&]emu=1/.test(location.search);const PERF=/[?&]perf=1/.test(location.search);
 if(EMU){const m=await import('https://cdn.jsdelivr.net/npm/iwer@2.7.0/build/iwer.module.js');const dev=new m.XRDevice(m.metaQuest3,{stereoEnabled:true});dev.installRuntime({forceInstall:true});dev.position.set(0,1.62,0);
   window.__xr={dev,head:(yaw,pitch=0)=>{const e=new m.XRDevice?null:null;const cy=Math.cos(yaw/2),sy=Math.sin(yaw/2),cp=Math.cos(pitch/2),sp=Math.sin(pitch/2);dev.quaternion.set(sp*cy,cp*sy,-sp*sy,cp*cy);},
     stick:(hand,x,y)=>dev.controllers[hand].updateAxes('thumbstick',x,y),press:(hand,btn,v=1)=>dev.controllers[hand].updateButtonValue(btn,v),
@@ -471,7 +471,7 @@ function ensureAudio(){ if(AC) return; AC=new (window.AudioContext||window.webki
   shaper=AC.createWaveShaper(); const c=new Float32Array(256); for(let i=0;i<256;i++){const x=i/128-1;c[i]=Math.tanh(x*2.6);} shaper.curve=c;
   dry=AC.createGain(); wet=AC.createGain(); wet.gain.value=0;
   // supermarket reverb
-  const conv=AC.createConvolver(); const ir=AC.createBuffer(2,AC.sampleRate*1.4,AC.sampleRate); for(let ch=0;ch<2;ch++){const d=ir.getChannelData(ch);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,2.6)*.5;} conv.buffer=ir; const rv=AC.createGain(); rv.gain.value=.28;
+  const conv=AC.createConvolver(); const ir=AC.createBuffer(2,AC.sampleRate*.8,AC.sampleRate); for(let ch=0;ch<2;ch++){const d=ir.getChannelData(ch);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,2.6)*.5;} conv.buffer=ir; const rv=AC.createGain(); rv.gain.value=.28;
   master.connect(dry); master.connect(shaper); shaper.connect(wet); dry.connect(lp); wet.connect(lp); lp.connect(comp); lp.connect(conv); conv.connect(rv); rv.connect(comp); comp.connect(lim); world.postLP=comp;
   // disorientation stage (only audible in crisis / deep challenge)
   const D=world.dis={};
@@ -552,7 +552,7 @@ function box(w,h,d,mat,x,y,z,ry=0,shadow=true){const m=new THREE.Mesh(new THREE.
 function buildWorld(){
   const cv=$('#c3d');
   renderer=new THREE.WebGLRenderer({canvas:cv,antialias:true,powerPreference:'high-performance'});
-  renderer.setPixelRatio(Math.min(devicePixelRatio,1.25)); renderer.xr.enabled=true; renderer.xr.setReferenceSpaceType('local-floor'); renderer.xr.setFramebufferScaleFactor(.8); renderer.xr.setFoveation(1);
+  renderer.setPixelRatio(Math.min(devicePixelRatio,1.25)); renderer.xr.enabled=true;renderer.xr.addEventListener('sessionstart',()=>{const ses=renderer.xr.getSession();try{if(ses&&ses.updateTargetFrameRate&&ses.supportedFrameRates&&[...ses.supportedFrameRates].includes(72))ses.updateTargetFrameRate(72).catch(()=>{});}catch(e){}}); renderer.xr.setReferenceSpaceType('local-floor'); renderer.xr.setFramebufferScaleFactor(.8); renderer.xr.setFoveation(1);
   renderer.shadowMap.enabled=false; renderer.toneMapping=THREE.ACESFilmicToneMapping; renderer.toneMappingExposure=1.05;
   scene=new THREE.Scene(); scene.background=new THREE.Color(0xffffff); scene.fog=new THREE.Fog(0xdfe8f0,36,90);
   
@@ -582,7 +582,7 @@ function buildWorld(){
   const panels=new THREE.InstancedMesh(new THREE.BoxGeometry(1.2,.06,.6),world.panelM,80); let pc=0;
   for(let x=-14;x<=14;x+=4) for(let z=-14;z<=14;z+=4){M.compose(V.set(x,4.17,z),Q.identity(),SC);panels.setMatrixAt(pc++,M);} panels.count=pc; panels.frustumCulled=false; scene.add(panels); world.panels=panels;
   world.lights=[]; [[-6,-3],[7,-3],[0,9]].forEach(([x,z])=>{const l=new THREE.PointLight(0xeaf3ff,1.6,30,1.1);l.position.set(x,3.9,z);scene.add(l);world.lights.push(l);});
-  {const b=new THREE.PointLight(0x9fd0ff,.9,12,1.5);b.position.set(14.6,2.8,-1);scene.add(b);}
+  
 
   // ---- product types ----
   const T={}; for(const cat in PRODUCTS){T[cat]=PRODUCTS[cat].map(([n,bg,fg,ac,sh])=>makeProductType(n,bg,fg,ac,sh==='can'?rnd(.16,.2):sh==='bottle'?rnd(.14,.18):rnd(.22,.34),sh==='can'?rnd(.18,.24):sh==='bottle'?rnd(.3,.4):rnd(.22,.38),sh?0:rnd(.16,.26),sh));}
@@ -667,7 +667,7 @@ function buildWorld(){
   world.child=npcs[4];
   world.staff=makeNPC({child:false,skin:pick(SKIN),hair:pick(HAIR),top:0x92d400,bot:0x1f2a44,scale:1,cart:false,start:99});npcs.pop();world.staff.m.visible=false;world.staff.state='browse';world.staff.stateT=1e9;
 
-  mergeStatics();
+  questPrep();mergeStatics();questLambert();
   // ---- head-locked effect overlay (replaces post-processing; never moves the head) ----
   world.ov=new THREE.Mesh(new THREE.PlaneGeometry(6,6),new THREE.ShaderMaterial({transparent:true,depthTest:false,depthWrite:false,uniforms:OverlayUniforms,vertexShader:`varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}`,fragmentShader:OverlayFrag}));
   world.ov.position.set(0,0,-1); world.ov.renderOrder=2000; camera.add(world.ov);
@@ -686,6 +686,24 @@ function buildWorld(){
 function mergeStatics(){world.vcMat=world.vcMat||new THREE.MeshStandardMaterial({vertexColors:true,roughness:.6,metalness:.15});const keep=new Set([...world.fridgeDoors,...(world.doors||[]),world.spinner,world.fanHit,...(world.tillLamps||[])]);const groups=new Map();const toRemove=[];
   scene.children.forEach(o=>{if(!o.isMesh||o.isInstancedMesh||o.isSprite||keep.has(o)||o.userData.item||o.userData.use||o.userData.ring)return;if(o.material.transparent&&o.material.opacity<1)return;const g=o.geometry;if(!g.attributes.position||!g.attributes.normal||!g.attributes.uv)return;o.updateMatrixWorld(true);const c=(g.index?g.toNonIndexed():g.clone());for(const k of Object.keys(c.attributes))if(!['position','normal','uv'].includes(k))c.deleteAttribute(k);if(c.attributes.position.count>60000)return;c.applyMatrix4(o.matrixWorld);const M=o.material;const plain=!M.map&&!M.emissiveMap&&!(M.emissive&&M.emissiveIntensity>0&&M.emissive.getHex())&&!M.transparent;const key=plain?'vc':M.uuid;if(plain){const n=c.attributes.position.count;const col=new Float32Array(n*3);for(let i=0;i<n;i++){col[i*3]=M.color.r;col[i*3+1]=M.color.g;col[i*3+2]=M.color.b;}c.setAttribute('color',new THREE.BufferAttribute(col,3));}if(!groups.has(key))groups.set(key,{mat:plain?world.vcMat:M,geos:[]});groups.get(key).geos.push(c);toRemove.push(o);});
   toRemove.forEach(o=>scene.remove(o));let n=0;groups.forEach(({mat,geos})=>{const m=mergeGeometries(geos,false);if(!m)return;const mesh=new THREE.Mesh(m,mat);mesh.matrixAutoUpdate=false;scene.add(mesh);n++;});world.mergedStats={before:toRemove.length,after:n};}
+function flattenGroup(g){g.updateMatrixWorld(true);const inv=new THREE.Matrix4().copy(g.matrixWorld).invert();const buckets=new Map();const rm=[];
+  g.traverse(m=>{if(!m.isMesh||m.isInstancedMesh)return;const M=m.material;if(Array.isArray(M)||M.transparent||M.wireframe)return;const geo=m.geometry;if(!geo.attributes.position||!geo.attributes.normal)return;const c=geo.index?geo.toNonIndexed():geo.clone();for(const k of Object.keys(c.attributes))if(!['position','normal','uv'].includes(k))c.deleteAttribute(k);if(!c.attributes.uv)c.setAttribute('uv',new THREE.BufferAttribute(new Float32Array(c.attributes.position.count*2),2));c.applyMatrix4(new THREE.Matrix4().multiplyMatrices(inv,m.matrixWorld));const plain=!M.map&&!M.emissiveMap&&!(M.emissive&&M.emissiveIntensity>0&&M.emissive.getHex());const key=plain?'vc':M.uuid;if(plain){const n=c.attributes.position.count;const col=new Float32Array(n*3);for(let i=0;i<n;i++){col[i*3]=M.color.r;col[i*3+1]=M.color.g;col[i*3+2]=M.color.b;}c.setAttribute('color',new THREE.BufferAttribute(col,3));}if(!buckets.has(key))buckets.set(key,{mat:plain?world.vcMat:M,geos:[]});buckets.get(key).geos.push(c);rm.push(m);});
+  if(rm.length<2)return 0;rm.forEach(m=>m.parent.remove(m));let n=0;buckets.forEach(({mat,geos})=>{const mg=mergeGeometries(geos,false);if(mg){const mesh=new THREE.Mesh(mg,mat);g.add(mesh);n++;}});return rm.length-n;}
+function mergeProducts(){const types=productTypes.filter(im=>im.count>0&&im.material.map&&im.material.map.image);if(types.length<2)return 0;const CW=256,CH=128,COLS=4,rows=Math.ceil(types.length/COLS);const cv=document.createElement('canvas');cv.width=CW*COLS;cv.height=THREE.MathUtils.ceilPowerOfTwo(CH*rows);const x=cv.getContext('2d');const geos=[];const mtx=new THREE.Matrix4();let idx=null;
+  types.forEach(im=>{if(idx===null)idx=!!im.geometry.index;else if(idx!==!!im.geometry.index)idx='mixed';});
+  types.forEach((im,i)=>{const cx=(i%COLS)*CW,cy=Math.floor(i/COLS)*CH;x.drawImage(im.material.map.image,cx,cy,CW,CH);const u0=cx/cv.width,u1=(cx+CW)/cv.width,v0=1-(cy+CH)/cv.height,v1=1-cy/cv.height;
+    const base=idx==='mixed'&&im.geometry.index?im.geometry.toNonIndexed():im.geometry.clone();for(const k of Object.keys(base.attributes))if(!['position','normal','uv'].includes(k))base.deleteAttribute(k);const uv=base.attributes.uv;for(let j=0;j<uv.count;j++){uv.setXY(j,u0+THREE.MathUtils.clamp(uv.getX(j),0,1)*(u1-u0),v0+THREE.MathUtils.clamp(uv.getY(j),0,1)*(v1-v0));}
+    for(let k=0;k<im.count;k++){im.getMatrixAt(k,mtx);const c=base.clone();c.applyMatrix4(mtx);geos.push(c);}scene.remove(im);});
+  const mg=mergeGeometries(geos,false);if(!mg)return 0;const tex=new THREE.CanvasTexture(cv);tex.colorSpace=types[0].material.map.colorSpace;tex.anisotropy=2;const mesh=new THREE.Mesh(mg,new THREE.MeshLambertMaterial({map:tex}));mesh.matrixAutoUpdate=false;scene.add(mesh);world.productMesh=mesh;return types.length-1;}
+function questPrep(){world.vcMat=world.vcMat||new THREE.MeshStandardMaterial({vertexColors:true,roughness:.6,metalness:.15});const refd=new Set();Object.values(world).forEach(v=>{if(Array.isArray(v))v.forEach(e=>{if(e&&e.isObject3D)refd.add(e);});else if(v&&v.isObject3D)refd.add(v);});
+  const dyn=new Set([world.rig,...npcs.map(n=>n.m),world.staff&&world.staff.m].filter(Boolean));let saved=0;
+  scene.children.slice().forEach(g=>{if(!g.isGroup||dyn.has(g))return;if(g.userData&&Object.keys(g.userData).length)return;let ok=!refd.has(g);g.traverse(o=>{if(o!==g&&refd.has(o))ok=false;if(o.userData&&(o.userData.item||o.userData.use||o.userData.ring))ok=false;if(o.isSprite||o.isPoints||o.isLine)ok=false;});if(ok)saved+=flattenGroup(g);});
+  [...npcs,world.staff].filter(Boolean).forEach(n=>{const cg=n.m.userData.cartG;if(cg)saved+=flattenGroup(cg);});
+  saved+=mergeProducts();world.questSaved=saved;}
+function questLambert(){const cache=new Map();const sw=m=>{if(!m||m.type!=='MeshStandardMaterial')return m;if(cache.has(m))return cache.get(m);const L=new THREE.MeshLambertMaterial({color:m.color,map:m.map,emissive:m.emissive,emissiveMap:m.emissiveMap,emissiveIntensity:m.emissiveIntensity,vertexColors:m.vertexColors,transparent:m.transparent,opacity:m.opacity,side:m.side,wireframe:m.wireframe,alphaTest:m.alphaTest,depthWrite:m.depthWrite,fog:m.fog});cache.set(m,L);return L;};
+  scene.traverse(o=>{if(o.isMesh)o.material=Array.isArray(o.material)?o.material.map(sw):sw(o.material);});Object.keys(world).forEach(k=>{if(cache.has(world[k]))world[k]=cache.get(world[k]);});world.lambertCount=cache.size;}
+function precompile(){const hidden=[];scene.traverse(o=>{if(!o.visible){hidden.push(o);o.visible=true;}});try{renderer.compile(scene,camera);}catch(e){console.warn('precompile',e);}hidden.forEach(o=>o.visible=false);}
+function questLevel(l){world.qLevel=l;const hide=l>=2?[0,1,2,3]:l>=1?[1,3]:[];hide.forEach(i=>{const n=npcs[i];if(n&&n!==world.child&&!n.off){n.off=true;n.m.visible=false;n.x=n.z=999;n.m.position.set(999,0,999);}});world.ovLite=l>=3;}
 const OverlayUniforms={time:{value:0},tunnel:{value:0},red:{value:0},fog:{value:0},grey:{value:0},flash:{value:0},blink:{value:0},frag:{value:0},grain:{value:0},cold:{value:0},smell:{value:0},glare:{value:0},vig:{value:.12}};
 const OverlayFrag=`uniform float time,tunnel,red,fog,grey,flash,blink,frag,grain,cold,smell,glare,vig;varying vec2 vUv;float hash(float n){return fract(sin(n)*43758.5453);}
 void main(){vec2 d=(vUv-0.5)*2.0;float r=length(d*vec2(1.0,1.15));vec3 col=vec3(0.0);float a=0.0;
@@ -719,7 +737,7 @@ function makeNPC(o){const g=new THREE.Group();const sk=new THREE.MeshStandardMat
   const armL=mkLimb(.055,.5,top,-.26,1.42),armR=mkLimb(.055,.5,top,.26,1.42);const handL=new THREE.Mesh(new THREE.SphereGeometry(.05,10,8),sk);
   const legL=mkLimb(.075,.55,bot,-.11,.86),legR=mkLimb(.075,.55,bot,.11,.86);
   g.add(torso,head,hr,armL,armR,legL,legR);g.traverse(m=>{if(m.isMesh){m.castShadow=true;}});g.scale.setScalar(o.scale);
-  let cart=null;if(o.cart){cart=trolley(0,0,0,false,g);cart.position.set(0,0,.75);cart.scale.setScalar(1/o.scale);armL.rotation.x=-1.1;armR.rotation.x=-1.1;}
+  let cart=null;if(o.cart){cart=trolley(0,0,0,false,g);cart.position.set(0,0,.75);g.userData.cartG=cart;cart.scale.setScalar(1/o.scale);armL.rotation.x=-1.1;armR.rotation.x=-1.1;}
   else if(!o.child&&Math.random()<.5){const bk=new THREE.Mesh(new THREE.BoxGeometry(.3,.22,.42,3,2,4),new THREE.MeshStandardMaterial({color:0x4a90e2,roughness:.5,wireframe:true}));bk.position.set(0,-.62,0);armR.add(bk);}
   scene.add(g);
   const n=nearestNode(rnd(-12,12),rnd(-9,7));const node=NAV.nodes[n];g.position.set(node.x,0,node.z);
@@ -819,7 +837,7 @@ function endChallenge(won){const c=S.ch;S.ch=null;$('#game').classList.remove('c
   if(won){S.R=clamp((c.seek?-1:1)*c.bar*.45,-100,100);SFX.good();if(c.id==='tills')S.after={t:S.t+.6,fn:()=>end('done')};}
   else crisis(c);}
 function crisis(c){$('#coach').innerHTML='';S.crises++;S.lastImpossible=!!c.impossible;if(c.impossible)S.impLost=true;S.hit.add('cascade');const kind=S.crises===1?'freeze':S.crises===2?'meltdown':'shutdown';S.hit.add(kind);S.crisisT=kind==='freeze'?4:5;S.R=92;
-  const h=$('#crH'),pp=$('#crP');const imp=c.impossible?' That one could not be won, however fast you tapped. Sometimes nothing a person does is enough, and the environment has to change instead.':' Not fast enough this time. The same shop can be manageable one day and too much the next.';if(kind==='freeze'){h.textContent='Freeze.';pp.textContent='You know what you want to do. Your body will not do it. Wait it out.'+imp;SFX.bump();lp.frequency.setTargetAtTime(1400,AC.currentTime,.2);setTimeout(()=>{if(AC&&!S.shut)lp.frequency.setTargetAtTime(20000,AC.currentTime,.5);},4000);}
+  const h=$('#crH'),pp=$('#crP');const imp=c.impossible?' That one could not be won, however fast anyone taps. Sometimes nothing a person does is enough, and the environment has to change instead.':' Not fast enough this time. The same shop can be manageable one day and too much the next.';if(kind==='freeze'){h.textContent='Freeze.';pp.textContent='You know what you want to do. Your body will not do it. Wait it out.'+imp;SFX.bump();lp.frequency.setTargetAtTime(1400,AC.currentTime,.2);setTimeout(()=>{if(AC&&!S.shut)lp.frequency.setTargetAtTime(20000,AC.currentTime,.5);},4000);}
   else if(kind==='meltdown'){h.textContent='Acute dysregulation.';pp.textContent='Everything at once. The nervous system can no longer hold the load and discharges it outwardly. Not a choice, not bad behaviour, and it happens in public.'+imp;SFX.roar();S.impulses.push({t:0,shake:40,flash:.8});S.melt=true;}
   else{h.textContent='Sensory shutdown.';pp.textContent='The nervous system withdraws. Nothing is going in now. The shop carries on. You do not.'+imp;S.shut=true;lp.frequency.setTargetAtTime(380,AC.currentTime,.4);}
   $('#crisisMsg').style.display='grid';$('#crisisMsg').classList.toggle('under',!!c.seek);if(!document.querySelector('#crCount'))$('#crP').insertAdjacentHTML('afterend','<div id="crCount"></div>');
@@ -858,7 +876,7 @@ function start(){
   if(xr.supported&&renderer&&!renderer.xr.isPresenting){navigator.xr.requestSession('immersive-vr',{optionalFeatures:['local-floor','bounded-floor']}).then(ses=>renderer.xr.setSession(ses)).catch(e=>{console.warn('xr',e);});}
   else if(xr.supported&&!renderer){xr.pending=navigator.xr.requestSession('immersive-vr',{optionalFeatures:['local-floor','bounded-floor']}).catch(e=>{console.warn('xr',e);return null;});}
   ensureAudio();if(AC.state==='suspended')AC.resume();master.gain.value=$('#vol').value/100*.9;
-  lowGfx=+$('#gfx').value<=1; if(!renderer)buildWorld(); else setQuality(+$('#gfx').value);
+  lowGfx=+$('#gfx').value<=1; if(!renderer){buildWorld();precompile();} else setQuality(+$('#gfx').value);
   Object.assign(S,{running:true,t:0,R:0,peak:0,low:0,found:0,stimT:0,impulses:[],shut:false,dis:false,ended:false,captionT:0,listScramble:0,beepT:0,rock:false,press:false,spinT:0,useT:0,useWhat:null,lagMax:0,tannoyNext:16,bumpCool:0,lastAct:0,held:null,walkT:0,stepT:0,lookAcc:0,walkAcc:0,tut:0,tutT:0,timerOn:false,wrong:0,next:null});
   S.reduced=$('#reduced').checked;S.profile=S.keepProfile&&S.profile.sound?S.profile:dealProfile();S.keepProfile=false;S.ear=false;S.melt=false;S.checkout=false;S.hbT=0;S.freezeT=0;S.flightT=0;S.loopT=0;S.crisisCool=0;S.staffT=0;S.alarmT=0;S.flightEnd=false;S.events=[];S.okUntil=0;S.ch=null;S.crises=0;S.crisisT=0;S.taps=0;S.chTills=false;S.impLost=false;S.lastTapT=-1;S.pendingCh=null;S.after=null;S.impossible=pick(['Bread','Bananas','Milk']);S.auto=null;$('#chal').classList.remove('on');$('#crisisMsg').style.display='none';$('#game').classList.remove('chal-on');if(world.staff){world.staff.m.visible=false;}$('#alert').classList.remove('on');$('#edge').style.opacity=0;S.active.clear();S.hit.clear();S.coached.clear();$('#feed').innerHTML='';$('#coach').innerHTML='';$('#stateMsg').style.display='none';$('#basket').textContent='🧺 Basket 0/4';$('#obj').classList.remove('top');
   Object.assign(player,{x:0,z:-15.3,yaw:Math.PI,pitch:0,tyaw:Math.PI,tpitch:0,vx:0,vz:0});S.chimed=false;if(world.rig)world.rig.rotation.y=Math.PI;
@@ -912,7 +930,7 @@ function tick(){
   const moved=Math.hypot(nx-player.x,nz-player.z);S.walkAcc+=moved;player.x=nx;player.z=nz;
   if(moved>.001){S.walkT+=dt*(moved/dt)/3.2;S.stepT+=dt*(moved/dt)/3.2;if(S.stepT>.55){S.stepT=0;SFX.step();}}
   // ---- NPCs + bumps ----
-  S.bumpCool-=dt;npcs.forEach(n=>{npcUpdate(n,dt);
+  S.bumpCool-=dt;npcs.forEach(n=>{if(n.off)return;npcUpdate(n,dt);
     const dp=Math.hypot(n.x-player.x,n.z-player.z);const pspd=Math.hypot(player.vx,player.vz);
     if(S.bumpCool<=0&&dp<.75&&pspd>.6&&!S.auto){S.bumpCool=4;SFX.bump();impulse('bump',12,'touch',{shake:16});if(P.proprio==='hypo')S.R=clamp(S.R+4,-100,100);coach('bump','You walked into someone','Unexpected touch is a jab for a touch-hypersensitive person. Give other shoppers room.','pink');}
     if(dp<.55){const ax=player.x-n.x,az=player.z-n.z,al=Math.hypot(ax,az)||1;player.x=n.x+ax/al*.55;player.z=n.z+az/al*.55;}});
@@ -945,7 +963,7 @@ function tick(){
   if(S.found===NEED&&!S.checkout){S.checkout=true;markers.Checkout.visible=true;}
   if(S.checkout&&!S.ended&&!S.ch&&!S.chTills&&Math.hypot(player.x-(-5),player.z-8.4)<1.6){S.chTills=true;S.auto=null;$('#autoBtn').classList.remove('on');$('#autoBtn').textContent='Walk (T)';startChallenge(CHALLENGES.Checkout);}
   if(S.timerOn){if(S.t>=TOTAL+(S.tStart||0))return end('time');}else S.tStart=S.t;
-  $('#timer').textContent=Math.max(0,Math.ceil(TOTAL-(S.t-(S.tStart||0))));
+  {const left=Math.max(0,Math.ceil(TOTAL-(S.t-(S.tStart||0))));$('#timer').textContent=left;const low=S.timerOn&&left<=20;$('#timer').style.color=low?'#ff6fb5':'';$('#timer').style.fontSize=low?'22px':'';$('#timerLbl').textContent=low?'s left to pay':'s left';}
   render(dt);raf=requestAnimationFrame(tick);
 }
 
@@ -989,7 +1007,7 @@ function render(dt){
   u.fog.value=under>.4?clamp((under-.4)/.5,0,1)*.75:0;u.grey.value=S.shut?1:0;
   u.frag.value=over>.62&&!S.shut?clamp((over-.62)/.3,0,1)*(Math.floor(S.t*3)%2?1:.5):0;if(S.ch)u.frag.value=Math.max(u.frag.value,(chI>.45?(Math.floor(S.t*4)%2?chI*.8:chI*.3):0)*(Rd?.3:1));if(crI)u.frag.value=Math.max(u.frag.value,isMelt?(Math.floor(S.t*6)%2?1:.4):isFreeze?.5:.2);
   u.grain.value=(.02+over*.08+under*.05+(S.ch?.1+chI*.22:0)+(crI?(isMelt?.25:isFreeze?.12:.2):0))*fxScale*1.2;
-  u.red.value=redMix*fxScale*(Rd?2:1);
+  u.red.value=redMix*fxScale*(Rd?2:1);if(world.ov&&renderer.xr.isPresenting){const core=u.tunnel.value+u.red.value+u.grey.value+u.blink.value+u.flash.value;const extra=u.fog.value+u.frag.value+u.cold.value+u.smell.value+u.glare.value;world.ov.visible=core>.015||(!world.ovLite&&(extra>.015||u.grain.value>.08));}
   // prompt + targets
   const a=aimed();const pr=$('#prompt');const cr=$('#cross');const domOK=!renderer.xr.isPresenting||S.frame%8===0;
   Object.values(targets).forEach(m=>{const hot=a&&a.obj===m;const h=m.userData.home;if(m.userData.done){if(m.userData.flyT!==undefined){m.userData.flyT+=dt;const k=clamp(m.userData.flyT/.6,0,1);m.position.y=h.y+k*1.2;m.scale.setScalar(1-k);if(k>=1){m.visible=false;delete m.userData.flyT;}}return;}
@@ -1014,6 +1032,7 @@ function render(dt){
   else $('#edge').style.opacity=0;
   if(S.tapT>0)S.tapT-=dt;$('#regBtn').style.display=S.ch?'none':'block';
   $('#stateLine').textContent=S.shut?'Sensory shutdown.':S.melt?'Acute dysregulation.':S.dis?'Disengaged.':S.crisisT>0?'Crisis. Wait it out.':S.ch?'Sensory challenge. Tap A or X.':R>80?'Overloaded. Everything hurts. Nothing is going in.':R>55?'Tunnelling. Vision narrowing, actions lagging.':R>25?'Loaded. It is not resetting.':R<-70?'Switching off. The list is slipping away.':R<-45?'Under-stimulated. Foggy, drifting, hungry for input.':R<-20?'Flat. Your body is asking for something.':'Regulated. The task is just a task.';
+  if(renderer.xr.isPresenting){const Qd=world.q||(world.q={ema:1/72,fpsN:0,fpsT:0,fps:0,cool:4});Qd.ema+=(dt-Qd.ema)*.05;Qd.fpsN++;Qd.fpsT+=dt;if(Qd.fpsT>=1){Qd.fps=Math.round(Qd.fpsN/Qd.fpsT);Qd.fpsN=0;Qd.fpsT=0;}Qd.cool-=dt;if((!EMU||/[?&]adapt=1/.test(location.search))&&Qd.cool<=0&&Qd.ema>1/72*1.18&&(world.qLevel||0)<3){Qd.cool=4;questLevel((world.qLevel||0)+1);}if(PERF&&S.frame%36===0)drawWrist();}
   if(window.__perf){const P=window.__perf,ri=renderer.info.render;P.n++;P.calls=ri.calls;P.tris=ri.triangles;P.dt+=dt;P.max=Math.max(P.max,dt);}
   drawMap();}
   if(renderer.xr.isPresenting){if(S.frame%5===0){const k=[objTxt,objSub,Math.round(objRel*20),alertT,alertD,kind,S.ch?Math.round(S.ch.bar):-1,S.ch?Math.ceil(S.ch.dur-S.ch.t):-1,S.crisisT>0,S.tapFx>0,$('#tut').className,($('#tut').textContent||'').length,(document.querySelector('.toast')||{}).textContent,S.captionT>0?$('#caption').textContent:''].join('|');if(k!==world.headKey){world.headKey=k;drawHead({objRel,objTxt,objSub,alertT,alertD,kind});}}if(S.frame%20===0){const k2=[S.found,Math.ceil(TOTAL-(S.t-(S.tStart||0))),Math.round(S.R/2),$('#stateLine').textContent,Math.round(player.x),Math.round(player.z)].join('|');if(k2!==world.wristKey){world.wristKey=k2;drawWrist();}}}
@@ -1041,7 +1060,7 @@ function drawHead(o){const c=world.headC,x=c.getContext('2d'),W=c.width,H=c.heig
   if(S.captionT>0){x.fillStyle='#fff';x.font='800 30px Montserrat, Arial';x.fillText($('#caption').textContent,W/2,H-50);}
   world.headT.needsUpdate=true;}
 function wrap(x,text,cx,y,maxW,lh){const words=String(text).split(' ');let line='';const lines=[];for(const w of words){const t=line?line+' '+w:w;if(x.measureText(t).width>maxW&&line){lines.push(line);line=w;}else line=t;}if(line)lines.push(line);lines.slice(0,4).forEach((l,i)=>x.fillText(l,cx,y+i*lh));}
-function drawWrist(){const c=world.wristC,x=c.getContext('2d'),W=c.width;x.clearRect(0,0,W,W);x.fillStyle='rgba(18,26,36,.92)';rrect(x,0,0,W,W,36);x.fill();
+function drawWrist(){const c=world.wristC,x=c.getContext('2d'),W=c.width;x.clearRect(0,0,W,W);x.fillStyle='rgba(18,26,36,.92)';rrect(x,0,0,W,W,36);x.fill();if(PERF&&world.q){x.save();x.textAlign='left';x.textBaseline='middle';x.font='800 24px Montserrat, Arial';x.fillStyle=world.q.fps>=68?'#92d400':world.q.fps>=50?'#ffb000':'#ff2d55';x.fillText(world.q.fps+' fps  ·  quality '+(3-(world.qLevel||0))+'/3  ·  '+renderer.info.render.calls+' calls',28,W-28);x.restore();}
   x.textAlign='left';x.textBaseline='middle';x.fillStyle='#aab4c0';x.font='800 20px Montserrat, Arial';x.fillText('FIND THESE',28,40);x.fillStyle='#fff';x.font='800 44px Montserrat, Arial';x.textAlign='right';x.fillText(Math.max(0,Math.ceil(TOTAL-(S.t-(S.tStart||0)))),W-28,40);x.textAlign='left';
   TARGETS.forEach((t,i)=>{const done=targets[t.id].userData.done;x.fillStyle=done?'#92d400':'#fff';x.font='600 30px Montserrat, Arial';x.fillText((done?'✓ ':'• ')+t.id,28,90+i*40);});
   x.fillStyle='#aab4c0';x.font='800 20px Montserrat, Arial';x.fillText('REGULATION  '+Math.round(S.R),28,235);x.fillStyle='#0f141b';rrect(x,28,255,W-56,26,6);x.fill();x.fillStyle='#fff';x.fillRect(W/2-1,255,2,26);const R=S.R;x.fillStyle=R<0?'#0098db':'#c0087f';const hw=(W-56)/2*Math.abs(R)/100;x.fillRect(R<0?W/2-hw:W/2,257,hw,22);
@@ -1066,8 +1085,8 @@ function end(reason){
   if(S.ended)return;S.ended=true;stopAll(false);
   const eb={unpaid:`Left without paying, ${Math.round(S.t)} seconds in`,flight:`Left the shop, ${Math.round(S.t)} seconds in`,shutdown:`Sensory shutdown, ${Math.round(S.t)} seconds in`,meltdown:`Acute dysregulation, ${Math.round(S.t)} seconds in`,disengage:`Disengaged, ${Math.round(S.t)} seconds in`,done:`Paid and out in ${Math.round(S.t)} seconds`,time:"Time's up"}[reason];$('#endTitle').classList.toggle('crisis',['shutdown','meltdown','disengage','flight','unpaid'].includes(reason));
   $('#endEyebrow').textContent=eb;$('#endTitle').textContent=reason==='done'?`You got all ${NEED} items and paid.`:(S.found===NEED?`You found all ${NEED} items, but never made it out.`:`You found ${S.found} of ${NEED} items.`);
-  $('#endTake').textContent={done:'You did it. Now look at what it cost.',time:'Ninety seconds was not enough for the person you were.',unpaid:'You found everything, and still could not get out.'}[reason]||'The shop made a simple job impossible for the person you were.';
-  $('#endLead').textContent={unpaid:'The checkout was the loudest place in the shop and the last straw. You put the basket down and walked out. Many autistic adults describe doing exactly this, and then not going back.',flight:'You did not finish. You got out, which is what every cell in your body was asking for. The list and the plan stopped existing the moment the exit did. Many autistic adults simply stop going to shops for this reason.',meltdown:'You did not finish. The environment kept adding load until your nervous system could no longer regulate it. In a real shop this is the moment other people stare. It is not a failure of the person. It is a failure of the place, and of the people who could have made it easier.',shutdown:'You did not finish. The load reached the point where your nervous system withdrew and stopped taking anything in. Autistic shoppers in the Reading study described exactly this: once inside, there is no way out.',disengage:'You did not finish. The shop gave your body none of the input it needed, and the task quietly disappeared. This is the side of sensory difference that gets missed, because it looks like "not paying attention".',done:'You finished, and paid, in the loudest corner of the shop. Now look at what it cost: every challenge you beat was invisible effort nobody else in the shop could see. In a real shop there is no key to tap, only the rocking or the hands over the ears, and the people who stare at it.',time:'A three-item list is not hard. The environment made it hard for the person you were. Even non-autistic visitors to the Reading research supermarket rushed through and missed items in the high-sensory version.'}[reason];if(S.crises)$('#endLead').textContent+=` You went into crisis ${S.crises} time${S.crises>1?'s':''}.`;if(S.impLost)$('#endLead').textContent+=` One challenge, “${CHALLENGES[S.impossible].title}”, could not be won however fast you tapped. Sometimes nothing a person does is enough, and the place has to change instead.`;
+  $('#endTake').textContent={done:'You did it. Now look at what it cost.',time:'105 seconds was not enough for the person you were.',unpaid:'You found everything, and still could not get out.'}[reason]||'The shop made a simple job impossible for the person you were.';
+  $('#endLead').textContent={unpaid:'The checkout was the loudest place in the shop and the last straw. You put the basket down and walked out. Many autistic adults describe doing exactly this, and then not going back.',flight:'You did not finish. You got out, which is what every cell in your body was asking for. The list and the plan stopped existing the moment the exit did. Many autistic adults simply stop going to shops for this reason.',meltdown:'You did not finish. The environment kept adding load until your nervous system could no longer regulate it. In a real shop this is the moment other people stare. It is not a failure of the person. It is a failure of the place, and of the people who could have made it easier.',shutdown:'You did not finish. The load reached the point where your nervous system withdrew and stopped taking anything in. Autistic shoppers in the Reading study described exactly this: once inside, there is no way out.',disengage:'You did not finish. The shop gave your body none of the input it needed, and the task quietly disappeared. This is the side of sensory difference that gets missed, because it looks like "not paying attention".',done:'You finished, and paid, in the loudest corner of the shop. Now look at what it cost: every challenge you beat was invisible effort nobody else in the shop could see. In a real shop there is no key to tap, only the rocking or the hands over the ears, and the people who stare at it.',time:'A three-item list is not hard. The environment made it hard for the person you were. Even non-autistic visitors to the Reading research supermarket rushed through and missed items in the high-sensory version.'}[reason];if(S.crises)$('#endLead').textContent+=` You went into crisis ${S.crises} time${S.crises>1?'s':''}.`;if(S.impLost)$('#endLead').textContent+=` One challenge, “${CHALLENGES[S.impossible].title}”, could not be won however fast anyone taps. Sometimes nothing a person does is enough, and the place has to change instead.`;
   $('#sItems').textContent=`${S.found}/${NEED}`;$('#sStimT').textContent=S.crises;$('#sStim').textContent=[...S.hit].filter(k=>STIM[k]&&STIM[k].s).length;{const cr=['freeze','meltdown','shutdown','disengage'].filter(k=>S.hit.has(k));if(cr.length)$('#endLead').textContent+=` Crises this run: ${cr.map(k=>STIM[k].name.toLowerCase()).join(', ')}.`;}
   $('#profCard').innerHTML=Object.entries(S.profile).map(([k,v])=>`<div class="${v}"><b>${SENSES[k].ic} ${SENSES[k].name} ${v==='hyper'?'↑':'↓'}</b><span>${SENSES[k][v]}</span></div>`).join('');
   const order=['challenge','fluorescent','clutter','music','crowd','till','fridge','cold','smell','tannoy','alarm','staff','bump','cry','fan','hunger','stimOK','cascade','tunnel','freeze','meltdown','shutdown','disengage'];
@@ -1077,7 +1096,7 @@ function end(reason){
 }
 
 // debug/testing hook
-window.__game={S,get player(){return player},keys,get scene(){return scene},get renderer(){return renderer},get world(){return world},drawHead,drawWrist,perfStart:()=>{window.__perf={n:0,dt:0,max:0,calls:0,tris:0};},perfRead:()=>{const P=window.__perf;return P?{frames:P.n,avgMs:+(P.dt/P.n*1000).toFixed(1),maxMs:+(P.max*1000).toFixed(1),calls:P.calls,tris:P.tris,merged:world.mergedStats,presenting:renderer.xr.isPresenting}:null;},productTypes,THREE,step:(n=60,dt=1/60)=>{player.tyaw=player.yaw;player.tpitch=player.pitch;for(let i=0;i<n;i++){if(!S.running)break;last=performance.now()-dt*1000;tick();}if(S.running)last=performance.now();},use,tap,startChallenge,CHALLENGES,aimed:()=>{const o=aimed();return o?{item:o.item,target:o.target,d:o.d}:null},src:()=>Object.keys(src),targets:()=>Object.fromEntries(Object.entries(targets).map(([k,m])=>[k,m.userData.home]))};
+window.__game={S,get player(){return player},keys,get scene(){return scene},get renderer(){return renderer},get world(){return world},drawHead,drawWrist,perfStart:()=>{window.__perf={n:0,dt:0,max:0,calls:0,tris:0};},perfRead:()=>{const P=window.__perf;return P?{saved:world.questSaved,lambert:world.lambertCount,level:world.qLevel||0,ovVisible:world.ov&&world.ov.visible,programs:renderer.info.programs.length,frames:P.n,avgMs:+(P.dt/P.n*1000).toFixed(1),maxMs:+(P.max*1000).toFixed(1),calls:P.calls,tris:P.tris,merged:world.mergedStats,presenting:renderer.xr.isPresenting}:null;},productTypes,THREE,step:(n=60,dt=1/60)=>{player.tyaw=player.yaw;player.tpitch=player.pitch;for(let i=0;i<n;i++){if(!S.running)break;last=performance.now()-dt*1000;tick();}if(S.running)last=performance.now();},use,tap,startChallenge,CHALLENGES,aimed:()=>{const o=aimed();return o?{item:o.item,target:o.target,d:o.d}:null},src:()=>Object.keys(src),targets:()=>Object.fromEntries(Object.entries(targets).map(([k,m])=>[k,m.userData.home]))};
 
 if(/[?&]mute=1/.test(location.search)){$('#vol').value=0;}
 if(!navigator.xr){const w=document.createElement('div');w.className='warn';w.innerHTML='<div><strong>No headset detected.</strong> Open this page in the browser on a Meta Quest to play in VR. It still runs here as a flat preview.</div>';$('#start .wrap').insertBefore(w,$('#startBtn'));}
